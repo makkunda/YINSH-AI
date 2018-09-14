@@ -1,4 +1,98 @@
-#include<iostream>
+#include <iostream>
+#include <limits>
+#include "game.cpp"
+
+const int MAX_DEPTH = 4;
+
+pair<GameState,float> MinMax(GameState state){
+    float value, temp;
+    vector<GameState> NextStates = state.GetValidMoves();
+    int i=0;
+    GameState BestState;
+    value = numeric_limits<float>::min();
+    for(i=0;i<NextStates.size();i++){
+        temp = max(value, MinMaxInternal(NextStates[i], MAX_DEPTH-1, false));
+        if(temp>value){
+            value = temp;
+            BestState = NextStates[i];
+        }
+    }
+    return make_pair(BestState,value);
+}
+
+float MinMaxInternal(GameState state, int depth, bool maximizing){
+    if((depth==0) || (state.GameEnded())){
+        return state.EvaluateHeuristic();
+    }
+    else{
+        float value;
+        vector<GameState> NextStates = state.GetValidMoves();
+        int i=0;
+        if(maximizing){
+            value = numeric_limits<float>::min();
+            for(i=0;i<NextStates.size();i++){
+                value = max(value, MinMaxInternal(NextStates[i], depth-1, false));
+            }
+            return value;
+        }
+        else{
+            value = numeric_limits<float>::max();
+            for(i=0;i<NextStates.size();i++){
+                value = min(value, MinMaxInternal(NextStates[i], depth-1, true));
+            }
+            return value;
+        }
+    }
+}
+
+pair<GameState,float> AlphaBeta(GameState state){
+    float value, temp;
+    vector<GameState> NextStates = state.GetValidMoves();
+    int i=0;
+    GameState BestState;
+    value = numeric_limits<float>::min();
+    for(i=0;i<NextStates.size();i++){
+        temp = max(value, AlphaBetaInternal(NextStates[i], MAX_DEPTH-1, false, numeric_limits<float>::min(), numeric_limits<float>::max()));
+        if(temp>value){
+            value = temp;
+            BestState = NextStates[i];
+        }
+    }
+    return make_pair(BestState,value);
+}
+
+float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha, float beta){
+    if((depth==0) || (state.GameEnded())){
+        return state.EvaluateHeuristic();
+    }
+    else{
+        float value;
+        vector<GameState> NextStates = state.GetValidMoves();
+        int i=0;
+        if(maximizing){
+            value = numeric_limits<float>::min();
+            for(i=0;i<NextStates.size();i++){
+                value = max(value, AlphaBetaInternal(NextStates[i], depth-1, false, alpha, beta));
+                alpha = max(alpha, value);
+                if(alpha >= beta){
+                    break;
+                }
+            }
+            return value;
+        }
+        else{
+            value = numeric_limits<float>::max();
+            for(i=0;i<NextStates.size();i++){
+                value = min(value, AlphaBetaInternal(NextStates[i], depth-1, true, alpha, beta));
+                beta = min(beta,value);
+                if(alpha >= beta){
+                    break;
+                }
+            }
+            return value;
+        }
+    }
+}
 
 int main(){
 

@@ -1,5 +1,8 @@
 #include "game.h"
 
+class Move{
+
+};
 
 class GameState {
     private:
@@ -10,7 +13,8 @@ class GameState {
                                     // blue peg is g  orange peg is p
                                     // empty is e 
         char turn; // 'b' and  'o'
-        vector<int> rings;
+        vector<int> rings; // rings by blue is zeroth element and rings by orange is first
+        Move  LastMove;//move which led to this state;
         GameState(){
             board = vector<vector<char> > ();
             int i = 0, j = 0;
@@ -28,10 +32,18 @@ class GameState {
             turn = 'b';
             rings = vector<int>(2,0);
         }
-        float evaluateHeuristic(){
+        bool GameEnded(){
+            if((rings[0]==3) ||  (rings[1]==3)){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        float EvaluateHeuristic(){
 
         }
-        vector<GameState> getValidMoves(){
+        vector<GameState> GetValidMoves(){
 
         }
 };
