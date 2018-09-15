@@ -30,10 +30,10 @@ class GameState {
             // deal with the six banned squares here?
             
             turn = 'b';
-            rings = vector<int>(2,0);
+            RingsRemoved = vector<int>(2,0);
         }
         bool GameEnded(){
-            if((rings[0]==3) ||  (rings[1]==3)){
+            if((RingsRemoved[0]==3) ||  (RingsRemoved[1]==3)){
                 return true;
             }
             else{
@@ -58,6 +58,6 @@ class GameState {
             score += 5*(RingsRemoved[0] - RingsRemoved[1]);
         }
         vector<GameState> GetValidMoves(){
-            
+
         }
 };
