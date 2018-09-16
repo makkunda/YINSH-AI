@@ -94,11 +94,34 @@ float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha
     }
 }
 
+
 int main(){
+    int player, BoardSize, time_given;
+    cin>>player;
+    player-=1; // to make it zero or one
+    cin>>BoardSize;
+    cin>>time_given;
+    char turn;
+    if(player==0){
+        turn = 'b';
+    }
+    else{
+        turn = 'o';
+    }
 
+    GameState CurrentState(BoardSize, turn);
+    string recv;
+    if(player==1){
+        getline(cin, recv);
+        ExecuteMove(&CurrentState, recv);    
+    }
+    while(true){
+        // play own move
+        
 
-
-
-
+        //execute opponent move
+        getline(cin, recv);
+        ExecuteMove(&CurrentState, recv);
+    }
     return 0;
 }

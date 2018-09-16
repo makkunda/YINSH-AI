@@ -333,10 +333,10 @@ class GameState {
         int BoardSize;
         MoveTables* table;
 
-        GameState(){
+        GameState(int BoardSize, char OurTurn){
             board = vector<vector<char> > ();
             int i = 0, j = 0;
-            BoardSize = 5; // num hexagons
+            // BoardSize = 5; // num hexagons
             board.push_back(vector<char>(1,'e'));
             for(i=1;i<=BoardSize;i++){
                 vector<char> temp;
@@ -347,7 +347,8 @@ class GameState {
             }
             // deal with the six banned squares here?
             
-            turn = 'b';
+            table = new MoveTables(BoardSize);
+            turn = OurTurn;
             RingsRemoved = vector<int>(2,0);
         }
 
