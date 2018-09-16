@@ -1,5 +1,76 @@
 #include "game.h"
 
+class MoveTables{
+    public:
+    unordered_map<pair<int,int>,vector<pair<int,int> > > vertical_up_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > vertical_down_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > diag_right_up_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > diag_right_down_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > diag_left_up_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > diag_left_down_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > vertical_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > diag_right_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > diag_left_map;
+    unordered_map<pair<int,int>,pair<int,int> > ours_to_axes;
+    unordered_map<pair<int,int>,pair<int,int> > axes_to_aurs;
+
+    MoveTables(int BoardSize){
+        int i = 0, j = 0;
+        int ax_x = 0, ax_y = 0;
+        ours_to_axes.insert(make_pair(make_pair(i,j),make_pair(ax_x,ax_y)));
+        axes_to_aurs.insert(make_pair(make_pair(ax_x,ax_y),make_pair(i,j)));        
+        int div;
+        for(i=1;i<=BoardSize;i++){
+            ax_y += 1;
+            for(j=0;j<6*i;j++){
+                ours_to_axes.insert(make_pair(make_pair(i,j),make_pair(ax_x,ax_y)));
+                axes_to_aurs.insert(make_pair(make_pair(ax_x,ax_y),make_pair(i,j)));                
+                div = j/i;
+                if(div==0){
+                    ax_x+=1;
+                }
+                else if(div==1){
+                    ax_y-=1;
+                }
+                else if(div==2){
+                    ax_x-=1;
+                    ax_y-=1;
+                }
+                else if(div==3){
+                    ax_x-=1;
+                }
+                else if(div==4){
+                    ax_y+=1;
+                }
+                else if(div==5){
+                    ax_x+=1;
+                    ax_y+=1;;
+                }
+            }
+        }
+        for(i=0;i<=BoardSize;i++){
+            if(i==0){
+
+                continue;
+            }
+            for(j=0;j<6*i;j++){
+                pair<int,int> in_ax = ours_to_axes[make_pair(i,j)];
+                ax_x = in_ax.first;
+                ax_y = in_ax.second;
+                int t1,t2,t3;
+                
+
+
+
+            }
+        }
+
+
+
+    }
+
+};
+
 class Move{
     public:
     char movecolour;
@@ -22,7 +93,6 @@ class Move{
 class GameState {
     private:
 
-
     public:
         vector<vector<char> > board; // blue ring is b orange ring is o 
                                     // blue peg is g  orange peg is p
@@ -30,13 +100,15 @@ class GameState {
         char turn; // 'b' and  'o'
         vector<int> RingsRemoved; // rings by blue is zeroth element and rings by orange is first
         Move*  LastMove;//move which led to this state;
-        int boardSize;
+        int BoardSize;
+        MoveTables* table;
+
         GameState(){
             board = vector<vector<char> > ();
             int i = 0, j = 0;
-            boardSize = 5; // num hexagons
+            BoardSize = 5; // num hexagons
             board.push_back(vector<char>(1,'e'));
-            for(i=1;i<=boardSize;i++){
+            for(i=1;i<=BoardSize;i++){
                 vector<char> temp;
                 for(j=0;j<6*i;j++){
                     temp.push_back('e');
@@ -52,9 +124,9 @@ class GameState {
         GameState(GameState* oth){
             board = vector<vector<char> > ();
             int i = 0, j = 0;
-            boardSize = oth->boardSize; // num hexagons
+            BoardSize = oth->BoardSize; // num hexagons
             board.push_back(vector<char>(1,oth->board[0][0]));
-            for(i=1;i<=boardSize;i++){
+            for(i=1;i<=BoardSize;i++){
                 vector<char> temp;
                 for(j=0;j<6*i;j++){
                     temp.push_back(oth->board[i][j]);
@@ -64,7 +136,7 @@ class GameState {
             // deal with the six banned squares here?
             
             turn = oth->turn;
-            rings = vector<int>(2,0);
+            RingsRemoved = vector<int>(2,0);
         }
 
         bool GameEnded(){
@@ -95,55 +167,55 @@ class GameState {
 
         vector<pair<int,int> > vertical_up(int x,int y)
         {
-            vector<pair<int,int> > res;
+            vector<pair<int,int> > res = table->vertical_up_map[make_pair(x,y)];
             return res;
         }
 
         vector<pair<int,int> > vertical_down(int x,int y)
         {
-            vector<pair<int,int> > res;
+            vector<pair<int,int> > res = table->vertical_down_map[make_pair(x,y)];
             return res;
         }
 
         vector<pair<int,int> > diag_right_up(int x,int y)
         {
-            vector<pair<int,int> > res;
+            vector<pair<int,int> > res = table->diag_right_up_map[make_pair(x,y)];
             return res;
         }
 
         vector<pair<int,int> > diag_right_down(int x,int y)
         {
-            vector<pair<int,int> > res;
+            vector<pair<int,int> > res = table->diag_right_down_map[make_pair(x,y)];
             return res;
         }
 
         vector<pair<int,int> > diag_left_up(int x,int y)
         {
-            vector<pair<int,int> > res;
+            vector<pair<int,int> > res = table->diag_left_up_map[make_pair(x,y)];
             return res;
         }
 
         vector<pair<int,int> > diag_left_down(int x,int y)
         {
-            vector<pair<int,int> > res;
+            vector<pair<int,int> > res = table->diag_left_down_map[make_pair(x,y)];
             return res;
         }
 
         vector<pair<int,int> > vertical(int x,int y)
         {
-            vector<pair<int,int> > res;
+            vector<pair<int,int> > res = table->vertical_map[make_pair(x,y)];
             return res;
         }
 
         vector<pair<int,int> > diag_right(int x,int y)
         {
-            vector<pair<int,int> > res;
+            vector<pair<int,int> > res = table->diag_right_map[make_pair(x,y)];
             return res;
         }
 
         vector<pair<int,int> > diag_left(int x,int y)
         {
-            vector<pair<int,int> > res;
+            vector<pair<int,int> > res = table->diag_left_map[make_pair(x,y)];
             return res;
         }
         
@@ -169,7 +241,7 @@ class GameState {
             vector<pair<int,int> > ringpos;
             if(board[0][0]==turn)
                 ringpos.push_back(make_pair(0,0));
-            for(i=0;i<boardSize;i++)
+            for(i=0;i<BoardSize;i++)
             {
                 for(j=0;j<6*i;j++)
                 {
@@ -299,7 +371,12 @@ class GameState {
 
                                                     to_push.LastMove->remr.first = rx;
                                                     to_push.LastMove->remr.second = ry;
-
+                                                    if(turn=='b'){
+                                                        RingsRemoved[0]+=1;
+                                                    }
+                                                    else if(turn == 'o'){
+                                                        RingsRemoved[1]+=1;
+                                                    }
                                                     to_push.LastMove->reml_first.first = alllines[jp][ii].first;
                                                     to_push.LastMove->reml_first.second = alllines[jp][ii].second;
 
@@ -375,7 +452,12 @@ class GameState {
 
                                                     to_push.LastMove->remr.first = rx;
                                                     to_push.LastMove->remr.second = ry;
-
+                                                    if(turn=='b'){
+                                                        RingsRemoved[0]+=1;
+                                                    }
+                                                    else if(turn == 'o'){
+                                                        RingsRemoved[1]+=1;
+                                                    }
                                                     to_push.LastMove->reml_first.first = alllines[jp][ii].first;
                                                     to_push.LastMove->reml_first.second = alllines[jp][ii].second;
 
