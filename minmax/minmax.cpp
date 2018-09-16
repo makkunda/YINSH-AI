@@ -116,10 +116,9 @@ int main(){
 
     GameState CurrentState(BoardSize, turn);
     string recv;
-    return 0;
     if(player==1){
         getline(cin, recv);
-        ExecuteMove(&CurrentState, recv);    
+        ExecuteMove(&CurrentState, recv);
     }
     int MyRingsPlaced = 0;
     while(MyRingsPlaced<5){
@@ -135,6 +134,12 @@ int main(){
             }
             if(CurrentState.board[hexagon][position] == 'e'){
                 CurrentState.board[hexagon][position] = turn;
+                if(player==0){
+                    CurrentState.turn = 'o'; 
+                }
+                else{
+                    CurrentState.turn = 'b'; 
+                }
                 break;
             }
         }
