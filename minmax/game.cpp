@@ -1,4 +1,6 @@
 #include "game.h"
+#include <unordered_map>
+
 
 class MoveTables{
     public:
@@ -12,19 +14,19 @@ class MoveTables{
     unordered_map<pair<int,int>,vector<pair<int,int> > > diag_right_map;
     unordered_map<pair<int,int>,vector<pair<int,int> > > diag_left_map;
     unordered_map<pair<int,int>,pair<int,int> > ours_to_axes;
-    unordered_map<pair<int,int>,pair<int,int> > axes_to_aurs;
+    unordered_map<pair<int,int>,pair<int,int> > axes_to_ours;
 
     MoveTables(int BoardSize){
         int i = 0, j = 0;
         int ax_x = 0, ax_y = 0;
         ours_to_axes.insert(make_pair(make_pair(i,j),make_pair(ax_x,ax_y)));
-        axes_to_aurs.insert(make_pair(make_pair(ax_x,ax_y),make_pair(i,j)));        
+        axes_to_ours.insert(make_pair(make_pair(ax_x,ax_y),make_pair(i,j)));        
         int div;
         for(i=1;i<=BoardSize;i++){
             ax_y += 1;
             for(j=0;j<6*i;j++){
                 ours_to_axes.insert(make_pair(make_pair(i,j),make_pair(ax_x,ax_y)));
-                axes_to_aurs.insert(make_pair(make_pair(ax_x,ax_y),make_pair(i,j)));                
+                axes_to_ours.insert(make_pair(make_pair(ax_x,ax_y),make_pair(i,j)));                
                 div = j/i;
                 if(div==0){
                     ax_x+=1;
@@ -59,9 +61,237 @@ class MoveTables{
                 ax_y = in_ax.second;
                 int t1,t2,t3;
                 
+                int x,y;
+                vector<pair<int,int> > vert_up;
+                vector<pair<int,int> > vert_down;
+                vector<pair<int,int> > vert;
+                vector<pair<int,int> > diag_right_up;
+                vector<pair<int,int> > diag_right_down;
+                vector<pair<int,int> > diag_right;
+                vector<pair<int,int> > diag_left_up;
+                vector<pair<int,int> > diag_left_down;
+                vector<pair<int,int> > diag_left;
+                x = ax_x;
+                for(y=ax_y+1;y<=BoardSize;y++)
+                {
+                    if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==0 && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;  
+                    if(axes_to_ours.count(make_pair(x,y))==0)
+                        break;                  
+                    pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
+                    vert_up.push_back(nxt_vert);
+                }
+                int ll=ax_y;
+                for(y=ax_y-1;y>=-1*BoardSize;y--)
+                {
+                    if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==0 && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(axes_to_ours.count(make_pair(x,y))==0)
+                        break; 
+                    ll = y;
+                    pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
+                    vert_down.push_back(nxt_vert);
+                }
+                for(y=ll;y<=BoardSize;y++)
+                {
+                    if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==0 && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(axes_to_ours.count(make_pair(x,y))==0)
+                        break;
+                    pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
+                    vert_up.push_back(nxt_vert);
+                }
+                int x_up,x_down;
+                x = ax_x+1;
+                y = ax_y;
+                x_up = ax_x;
+                x_down = ax_x;
+                while(true)
+                {
+                    if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==0 && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(axes_to_ours.count(make_pair(x,y))==0)
+                        break;
+                    x_up = x;
+                    pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
+                    diag_right_down.push_back(nxt_vert);
+                    x++;
+                }
 
+                x = ax_x-1;
+                y = ax_y;
+                while(true)
+                {
+                    if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==0 && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(axes_to_ours.count(make_pair(x,y))==0)
+                        break;
+                    x_down = x;
+                    pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
+                    diag_left_up.push_back(nxt_vert);
+                    x--;
+                }
 
+                x = x_down;
+                y = ax_y;
+                while(true)
+                {
+                    if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==0 && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(axes_to_ours.count(make_pair(x,y))==0)
+                        break;
+                    pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
+                    diag_left.push_back(nxt_vert);
+                    x++;
+                }
 
+                int x_lim,y_lim;
+                x = ax_x+1;
+                y = ax_y+1;
+                x_lim = ax_x;
+                y_lim = ax_y;
+                while(true)
+                {
+                    if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==0 && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(axes_to_ours.count(make_pair(x,y))==0)
+                        break;
+                    pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
+                    diag_right_up.push_back(nxt_vert);
+                    x++;
+                    y++;
+                }
+
+                x = ax_x-1;
+                y = ax_y-1;
+                while(true)
+                {
+                    if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==0 && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(axes_to_ours.count(make_pair(x,y))==0)
+                        break;
+                    x_lim = x;y_lim = y;
+                    pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
+                    diag_left_down.push_back(nxt_vert);
+                    x--;
+                    y--;
+                }
+
+                x = x_lim;
+                y = y_lim;
+                while(true)
+                {
+                    if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==0 && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(-1*BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(x==(BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                        continue;
+                    if(axes_to_ours.count(make_pair(x,y))==0)
+                        break;
+                    pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
+                    diag_right.push_back(nxt_vert);
+                    x++;
+                    y++;
+                }
+
+                vertical_up_map.insert(make_pair(make_pair(i,j),vert_up));
+                vertical_down_map.insert(make_pair(make_pair(i,j),vert_down));
+                vertical_map.insert(make_pair(make_pair(i,j),vert));
+
+                diag_right_up_map.insert(make_pair(make_pair(i,j),diag_right_up));
+                diag_right_down_map.insert(make_pair(make_pair(i,j),diag_right_down));
+                diag_right_map.insert(make_pair(make_pair(i,j),diag_right));
+
+                diag_left_up_map.insert(make_pair(make_pair(i,j),diag_left_up));
+                diag_left_down_map.insert(make_pair(make_pair(i,j),diag_left_down));
+                diag_left_map.insert(make_pair(make_pair(i,j),diag_left));
             }
         }
 
