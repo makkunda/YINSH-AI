@@ -1,7 +1,4 @@
-#include <iostream>
-#include <limits>
-#include <sstream>
-#include "game.cpp"
+#include "game.h"
 
 const int MAX_DEPTH = 4;
 
@@ -98,14 +95,20 @@ pair<GameState,float> AlphaBeta(GameState state){
     return make_pair(BestState,value);
 }
 
-void ExecuteMove(GameState* s, string t){}
-
 int main(){
     int player, BoardSize, time_given;
-    cin>>player;
+    srand(time(0));
+    string recv;
+    getline(cin, recv);
+    vector<string> vv;
+    split_ours(recv.c_str(),vv,' ');
+    player = atoi(vv[0].c_str());
+    BoardSize = atoi(vv[1].c_str());
+    time_given = atoi(vv[2].c_str());
+    // cin>>player;
     player-=1; // to make it zero or one
-    cin>>BoardSize;
-    cin>>time_given;
+    // cin>>BoardSize;
+    // cin>>time_given;
     char turn;
     if(player==0){
         turn = 'b';
@@ -113,9 +116,9 @@ int main(){
     else{
         turn = 'o';
     }
-
-    GameState CurrentState(BoardSize, turn);
-    string recv;
+    MoveTables*  FullTable;
+    FullTable = new MoveTables(BoardSize);
+    GameState CurrentState(BoardSize, turn, FullTable);
     if(player==1){
         getline(cin, recv);
         ExecuteMove(&CurrentState, recv);
@@ -143,6 +146,7 @@ int main(){
                 break;
             }
         }
+        cout<<"P "<<hexagon<<" "<<position<<endl;
         getline(cin, recv);
         ExecuteMove(&CurrentState, recv);
         MyRingsPlaced++;
