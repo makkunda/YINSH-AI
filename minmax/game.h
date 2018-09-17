@@ -7,41 +7,41 @@
 #include <limits>
 using namespace std;
 
-// template <>
-// struct hash<pair<int, int> > {
-// public:
-//         size_t operator()(pair<int, int> x) const throw() {
-//             //  size_t h = hash<int>()(x.first) ^ hash<int>()(x.second);//something with x   
-//             size_t h = (10+x.first)*101 + x.second;
-//              return h;
-//         }
-// };
+template <>
+struct std::hash<pair<int, int> > {
+public:
+        size_t operator()(pair<int, int> x) const throw() {
+            //  size_t h = hash<int>()(x.first) ^ hash<int>()(x.second);//something with x   
+            size_t h = (10+x.first)*101 + x.second;
+             return h;
+        }
+};
 
 class MoveTables{
     public:
-    // unordered_map<pair<int,int>,vector<pair<int,int> > > vertical_up_map;
-    // unordered_map<pair<int,int>,vector<pair<int,int> > > vertical_down_map;
-    // unordered_map<pair<int,int>,vector<pair<int,int> > > diag_right_up_map;
-    // unordered_map<pair<int,int>,vector<pair<int,int> > > diag_right_down_map;
-    // unordered_map<pair<int,int>,vector<pair<int,int> > > diag_left_up_map;
-    // unordered_map<pair<int,int>,vector<pair<int,int> > > diag_left_down_map;
-    // unordered_map<pair<int,int>,vector<pair<int,int> > > vertical_map;
-    // unordered_map<pair<int,int>,vector<pair<int,int> > > diag_right_map;
-    // unordered_map<pair<int,int>,vector<pair<int,int> > > diag_left_map;
-    // unordered_map<pair<int,int>,pair<int,int> > ours_to_axes;
-    // unordered_map<pair<int,int>,pair<int,int> > axes_to_ours;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > vertical_up_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > vertical_down_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > diag_right_up_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > diag_right_down_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > diag_left_up_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > diag_left_down_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > vertical_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > diag_right_map;
+    unordered_map<pair<int,int>,vector<pair<int,int> > > diag_left_map;
+    unordered_map<pair<int,int>,pair<int,int> > ours_to_axes;
+    unordered_map<pair<int,int>,pair<int,int> > axes_to_ours;
 
-    map<pair<int,int>,vector<pair<int,int> > > vertical_up_map;
-    map<pair<int,int>,vector<pair<int,int> > > vertical_down_map;
-    map<pair<int,int>,vector<pair<int,int> > > diag_right_up_map;
-    map<pair<int,int>,vector<pair<int,int> > > diag_right_down_map;
-    map<pair<int,int>,vector<pair<int,int> > > diag_left_up_map;
-    map<pair<int,int>,vector<pair<int,int> > > diag_left_down_map;
-    map<pair<int,int>,vector<pair<int,int> > > vertical_map;
-    map<pair<int,int>,vector<pair<int,int> > > diag_right_map;
-    map<pair<int,int>,vector<pair<int,int> > > diag_left_map;
-    map<pair<int,int>,pair<int,int> > ours_to_axes;
-    map<pair<int,int>,pair<int,int> > axes_to_ours;
+    // map<pair<int,int>,vector<pair<int,int> > > vertical_up_map;
+    // map<pair<int,int>,vector<pair<int,int> > > vertical_down_map;
+    // map<pair<int,int>,vector<pair<int,int> > > diag_right_up_map;
+    // map<pair<int,int>,vector<pair<int,int> > > diag_right_down_map;
+    // map<pair<int,int>,vector<pair<int,int> > > diag_left_up_map;
+    // map<pair<int,int>,vector<pair<int,int> > > diag_left_down_map;
+    // map<pair<int,int>,vector<pair<int,int> > > vertical_map;
+    // map<pair<int,int>,vector<pair<int,int> > > diag_right_map;
+    // map<pair<int,int>,vector<pair<int,int> > > diag_left_map;
+    // map<pair<int,int>,pair<int,int> > ours_to_axes;
+    // map<pair<int,int>,pair<int,int> > axes_to_ours;
 
     MoveTables(int BoardSize){
         int i = 0, j = 0;

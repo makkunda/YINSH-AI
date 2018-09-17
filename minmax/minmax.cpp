@@ -1,6 +1,6 @@
 #include "game.h"
 
-const int MAX_DEPTH = 4;
+const int MAX_DEPTH = 3;
 
 
 float MinMaxInternal(GameState state, int depth, bool maximizing){
@@ -36,12 +36,14 @@ pair<GameState,float> MinMax(GameState state){
     GameState BestState;
     value = numeric_limits<float>::min();
     for(i=0;i<NextStates.size();i++){
+        // cout<<i<<endl;
         temp = max(value, MinMaxInternal(NextStates[i], MAX_DEPTH-1, false));
         if(temp>value){
             value = temp;
             BestState = NextStates[i];
         }
     }
+    // cout<<"Exiting"<<endl;
     return make_pair(BestState,value);
 }
 
@@ -172,16 +174,16 @@ int main(){
     // pair<GameState,float> result;
     while(true){
         // play own move
-        pair<GameState,float> result = MinMax(CurrentState);
+        pair<GameState,float> result = AlphaBeta(CurrentState);
         GameState NewState = result.first;
         stringstream MoveOut;
 
         MoveOut << "S " << NewState.LastMove->init.first<<" "<<NewState.LastMove->init.second;
-        MoveOut << " M" << NewState.LastMove->finl.first<<" "<<NewState.LastMove->finl.second;
+        MoveOut << " M " << NewState.LastMove->finl.first<<" "<<NewState.LastMove->finl.second;
         if(NewState.LastMove->remr.first != -1){
-            MoveOut << " RS" << NewState.LastMove->reml_first.first<<" "<<NewState.LastMove->reml_first.second;
-            MoveOut << " RE" << NewState.LastMove->reml_last.first<<" "<<NewState.LastMove->reml_last.second;
-            MoveOut << " X" << NewState.LastMove->remr.first<<" "<<NewState.LastMove->remr.second;
+            MoveOut << " RS " << NewState.LastMove->reml_first.first<<" "<<NewState.LastMove->reml_first.second;
+            MoveOut << " RE " << NewState.LastMove->reml_last.first<<" "<<NewState.LastMove->reml_last.second;
+            MoveOut << " X " << NewState.LastMove->remr.first<<" "<<NewState.LastMove->remr.second;
         }
         MoveOut <<"\n";
         cout<<MoveOut.str();
