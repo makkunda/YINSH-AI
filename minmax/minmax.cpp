@@ -135,6 +135,24 @@ int main(){
             else{
                 position = rand() % (6*hexagon);
             }
+            int x,y;
+            pair<int,int> other_coord = FullTable->ours_to_axes[make_pair(hexagon,position)];
+            x = other_coord.first;
+            y = other_coord.second;
+
+            if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                continue;
+            if(x==0 && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                continue;
+            if(x==(-1*BoardSize) && (y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                continue;
+            if(x==(BoardSize) && (y==(BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                continue;
+            if(x==(-1*BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                continue;
+            if(x==(BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                continue;
+
             if(CurrentState.board[hexagon][position] == 'e'){
                 CurrentState.board[hexagon][position] = turn;
                 if(player==0){

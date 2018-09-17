@@ -53,23 +53,23 @@ class MoveTables{
         for(i=1;i<=BoardSize;i++){
             ax_y += 1;
             for(j=0;j<6*i;j++){
-                flag = 0;
-                if(ax_x==0 && (ax_y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
-                    flag = 1;
-                if(ax_x==0 && (ax_y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
-                    flag = 1;
-                if(ax_x==(-1*BoardSize) && (ax_y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
-                    flag = 1;
-                if(ax_x==(BoardSize) && (ax_y==(BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
-                    flag = 1;
-                if(ax_x==(-1*BoardSize) && (ax_y==0) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
-                    flag = 1;
-                if(ax_x==(BoardSize) && (ax_y==0) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
-                    flag = 1;
-                if(!(flag==1)){
+                // flag = 0;
+                // if(ax_x==0 && (ax_y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                //     flag = 1;
+                // if(ax_x==0 && (ax_y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                //     flag = 1;
+                // if(ax_x==(-1*BoardSize) && (ax_y==(-1*BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                //     flag = 1;
+                // if(ax_x==(BoardSize) && (ax_y==(BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                //     flag = 1;
+                // if(ax_x==(-1*BoardSize) && (ax_y==0) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                //     flag = 1;
+                // if(ax_x==(BoardSize) && (ax_y==0) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                //     flag = 1;
+                // if(!(flag==1)){
                     ours_to_axes.insert(make_pair(make_pair(i,j),make_pair(ax_x,ax_y)));
                     axes_to_ours.insert(make_pair(make_pair(ax_x,ax_y),make_pair(i,j)));        
-                }
+                // }
                 div = j/i;
                 if(div==0){
                     ax_x+=1;
@@ -176,12 +176,13 @@ class MoveTables{
                     vert_up.push_back(nxt_vert);
                 }
                 int x_up,x_down;
-                x = ax_x+1;
+                x = ax_x;
                 y = ax_y;
                 x_up = ax_x;
                 x_down = ax_x;
                 while(true)
                 {
+                    x++;
                     if(axes_to_ours.count(make_pair(x,y))==0)
                         break;
                     if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
@@ -199,13 +200,13 @@ class MoveTables{
                     x_up = x;
                     pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
                     diag_right_down.push_back(nxt_vert);
-                    x++;
                 }
 
-                x = ax_x-1;
+                x = ax_x;
                 y = ax_y;
                 while(true)
                 {
+                    x--;                    
                     if(axes_to_ours.count(make_pair(x,y))==0)
                         break;
                     if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
@@ -223,13 +224,13 @@ class MoveTables{
                     x_down = x;
                     pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
                     diag_left_up.push_back(nxt_vert);
-                    x--;
                 }
 
-                x = x_down;
+                x = x_down-1;
                 y = ax_y;
                 while(true)
                 {
+                    x++;                    
                     if(axes_to_ours.count(make_pair(x,y))==0)
                         break;
                     if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
@@ -246,16 +247,17 @@ class MoveTables{
                         continue;
                     pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
                     diag_left.push_back(nxt_vert);
-                    x++;
                 }
 
                 int x_lim,y_lim;
-                x = ax_x+1;
-                y = ax_y+1;
+                x = ax_x;
+                y = ax_y;
                 x_lim = ax_x;
                 y_lim = ax_y;
                 while(true)
                 {
+                    x++;
+                    y++;
                     if(axes_to_ours.count(make_pair(x,y))==0)
                         break;
                     if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
@@ -273,14 +275,14 @@ class MoveTables{
 
                     pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
                     diag_right_up.push_back(nxt_vert);
-                    x++;
-                    y++;
                 }
 
-                x = ax_x-1;
-                y = ax_y-1;
+                x = ax_x;
+                y = ax_y;
                 while(true)
                 {
+                    x--;
+                    y--;
                     if(axes_to_ours.count(make_pair(x,y))==0)
                         break;
                     if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
@@ -298,14 +300,14 @@ class MoveTables{
                     x_lim = x;y_lim = y;
                     pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
                     diag_left_down.push_back(nxt_vert);
-                    x--;
-                    y--;
                 }
 
-                x = x_lim;
-                y = y_lim;
+                x = x_lim-1;
+                y = y_lim-1;
                 while(true)
                 {
+                    x++;
+                    y++;
                     if(axes_to_ours.count(make_pair(x,y))==0)
                         break;
                     if(x==0 && (y==BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
@@ -322,8 +324,6 @@ class MoveTables{
                         continue;
                     pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
                     diag_right.push_back(nxt_vert);
-                    x++;
-                    y++;
                 }
 
                 vertical_up_map.insert(make_pair(make_pair(i,j),vert_up));
