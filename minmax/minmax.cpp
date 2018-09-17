@@ -97,7 +97,7 @@ pair<GameState,float> AlphaBeta(GameState state){
 
 int main(){
     int player, BoardSize, time_given;
-    srand(time(0));
+    // srand(time(0));
     string recv;
     getline(cin, recv);
     vector<string> vv;
