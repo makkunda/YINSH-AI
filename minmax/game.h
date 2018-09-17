@@ -621,7 +621,8 @@ class GameState {
                                 {
                                     for(int ii=0;ii<alllines[jp].size();ii++)
                                     {
-                                        if(ii>(alllines[jp].size()-BoardSize))
+                                        int tempvar = ((int)alllines[jp].size()) - BoardSize;
+                                        if(ii>tempvar)
                                             break;
                                         bool linep = true;
                                         for(int jj=ii;jj<(ii+BoardSize);jj++)
@@ -702,8 +703,9 @@ class GameState {
                                 {
                                     for(int ii=0;ii<alllines[jp].size();ii++)
                                     {
-                                        if(ii>(alllines[jp].size()-BoardSize))
-                                            break;
+                                        int tempvar = ((int)alllines[jp].size()) - BoardSize;
+                                        if(ii>tempvar)
+                                           break;
                                         bool linep = true;
                                         for(int jj=ii;jj<(ii+BoardSize);jj++)
                                         {
