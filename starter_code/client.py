@@ -108,7 +108,11 @@ class Client(Communicator):
 			print 'ERROR : FAILED TO SEND DATA TO SERVER'
 			super(Client,self).closeSocket()
 		elif((data['action'] == 'KILLPROC') or (data['action'] == 'FINISH')):
-			super(Client,self).closeSocket()
+			try:	
+				time.sleep(30000)
+			except:		
+				super(Client,self).closeSocket()
+			
 		return success_flag
 
 	
