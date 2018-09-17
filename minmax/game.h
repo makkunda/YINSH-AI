@@ -604,10 +604,10 @@ class GameState {
                                 {
                                     for(int ii=0;ii<alllines[jp].size();ii++)
                                     {
-                                        if(ii>(alllines[jp].size()-5))
+                                        if(ii>(alllines[jp].size()-BoardSize))
                                             break;
                                         bool linep = true;
-                                        for(int jj=ii;jj<(ii+5);jj++)
+                                        for(int jj=ii;jj<(ii+BoardSize);jj++)
                                         {
                                             int xx,yy;
                                             xx = alllines[jp][jj].first;
@@ -636,7 +636,7 @@ class GameState {
                                                     }
 
                                                     GameState to_push = new GameState(temp);
-                                                    for(int jj=ii;jj<(ii+5);jj++)
+                                                    for(int jj=ii;jj<(ii+BoardSize);jj++)
                                                     {
                                                         int xxx = alllines[jp][jj].first;
                                                         int yyy = alllines[jp][jj].second;
@@ -655,8 +655,8 @@ class GameState {
                                                     to_push.LastMove->reml_first.first = alllines[jp][ii].first;
                                                     to_push.LastMove->reml_first.second = alllines[jp][ii].second;
 
-                                                    to_push.LastMove->reml_last.first = alllines[jp][ii+4].first;
-                                                    to_push.LastMove->reml_last.second = alllines[jp][ii+4].second;
+                                                    to_push.LastMove->reml_last.first = alllines[jp][ii+BoardSize-1].first;
+                                                    to_push.LastMove->reml_last.second = alllines[jp][ii+BoardSize-1].second;
 
                                                     res.push_back(to_push);
                                                 }
@@ -685,10 +685,10 @@ class GameState {
                                 {
                                     for(int ii=0;ii<alllines[jp].size();ii++)
                                     {
-                                        if(ii>(alllines[jp].size()-5))
+                                        if(ii>(alllines[jp].size()-BoardSize))
                                             break;
                                         bool linep = true;
-                                        for(int jj=ii;jj<(ii+5);jj++)
+                                        for(int jj=ii;jj<(ii+BoardSize);jj++)
                                         {
                                             int xx,yy;
                                             xx = alllines[jp][jj].first;
@@ -717,7 +717,7 @@ class GameState {
                                                     }
 
                                                     GameState to_push = new GameState(temp);
-                                                    for(int jj=ii;jj<(ii+5);jj++)
+                                                    for(int jj=ii;jj<(ii+BoardSize);jj++)
                                                     {
                                                         int xxx = alllines[jp][jj].first;
                                                         int yyy = alllines[jp][jj].second;
@@ -736,8 +736,8 @@ class GameState {
                                                     to_push.LastMove->reml_first.first = alllines[jp][ii].first;
                                                     to_push.LastMove->reml_first.second = alllines[jp][ii].second;
 
-                                                    to_push.LastMove->reml_last.first = alllines[jp][ii+4].first;
-                                                    to_push.LastMove->reml_last.second = alllines[jp][ii+4].second;
+                                                    to_push.LastMove->reml_last.first = alllines[jp][ii+BoardSize-1].first;
+                                                    to_push.LastMove->reml_last.second = alllines[jp][ii+BoardSize-1].second;
 
                                                     res.push_back(to_push);
                                                 }

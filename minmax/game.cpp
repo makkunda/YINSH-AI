@@ -29,43 +29,43 @@ vector<pair<int,int> > getline_ours(pair<int,int> st,pair<int,int> end,GameState
     int x1,y1,x2,y2;
     x1 = st_ax.first; y1 = st_ax.second;
     x2 = en_ax.first; y2 = en_ax.second;
-
-    if(x1==x2&&y2==(y1+4))
+    int bs = S->BoardSize;
+    if(x1==x2&&y2==(y1+bs-1))
     {
         int i;
-        for(i=0;i<5;i++)
+        for(i=0;i<bs;i++)
         {
             res.push_back(S->table->axes_to_ours[make_pair(x1,y1+i)]);
         }
     }
-    else if(x1==x2&&y2==(y1-4))
+    else if(x1==x2&&y2==(y1-bs+1))
     {
         int i;
-        for(i=4;i>=0;i--)
+        for(i=(bs-1);i>=0;i--)
         {
             res.push_back(S->table->axes_to_ours[make_pair(x1,y2+i)]);
         }
     } 
-    else if(y1==y2&&x2==(x1+4))
+    else if(y1==y2&&x2==(x1+(bs-1)))
     {
         int i;
-        for(i=0;i<5;i++)
+        for(i=0;i<bs;i++)
         {
             res.push_back(S->table->axes_to_ours[make_pair(x1+i,y2)]);
         }
     } 
-    else if(y1==y2&&x2==(x1-4))
+    else if(y1==y2&&x2==(x1-(bs-1)))
     {
         int i;
-        for(i=4;i>=0;i--)
+        for(i=(bs-1);i>=0;i--)
         {
             res.push_back(S->table->axes_to_ours[make_pair(x2+i,y2)]);
         }
     } 
-    else if(x2==(x1+4)&&y2==(y1+4))
+    else if(x2==(x1+(bs-1))&&y2==(y1+(bs-1)))
     {
         int i;
-        for(i=0;i<5;i++)
+        for(i=0;i<bs;i++)
         {
             res.push_back(S->table->axes_to_ours[make_pair(x1+i,y1+i)]);
         }
@@ -73,7 +73,7 @@ vector<pair<int,int> > getline_ours(pair<int,int> st,pair<int,int> end,GameState
     else
     {
         int i;
-        for(i=0;i<5;i++)
+        for(i=0;i<bs;i++)
         {
             res.push_back(S->table->axes_to_ours[make_pair(x2+i,y2+i)]);
         }
