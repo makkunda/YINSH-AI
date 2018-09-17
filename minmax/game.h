@@ -417,6 +417,7 @@ class GameState {
                     temp.push_back(oth->board[i][j]);
                 }
                 board.push_back(temp);
+                LastMove = new Move(oth->LastMove);
             }
             
             // deal with the six banned squares here?
