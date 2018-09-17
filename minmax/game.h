@@ -81,11 +81,12 @@ class MoveTables{
             }
         }
         for(i=0;i<=BoardSize;i++){
-            if(i==0){
-
-                continue;
-            }
-            for(j=0;j<6*i;j++){
+            for(j=0;j<=6*i;j++){
+                if(j==(6*i))
+                {
+                    if(i>0)
+                        break;
+                }
                 pair<int,int> in_ax = ours_to_axes[make_pair(i,j)];
                 ax_x = in_ax.first;
                 ax_y = in_ax.second;
