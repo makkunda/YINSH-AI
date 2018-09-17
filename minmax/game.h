@@ -569,8 +569,8 @@ class GameState {
                             for(kp=0;kp<k;kp++)
                             {
                                 int xk,yk;
-                                xk=pos[i][kp].first;
-                                yk=pos[i][kp].second;
+                                xk=pos[j][kp].first;
+                                yk=pos[j][kp].second;
                                 if(temp.board[xk][yk]==mytok)
                                     temp.board[xk][yk]=opptok;
                                 else if(temp.board[xk][yk]==opptok)
@@ -581,8 +581,8 @@ class GameState {
                             for(kp=0;kp<k;kp++)
                             {
                                 int xk,yk;
-                                xk=pos[i][kp].first;
-                                yk=pos[i][kp].second;
+                                xk=pos[j][kp].first;
+                                yk=pos[j][kp].second;
 
                                 vector<vector<pair<int,int> > >alllines;
                                 if(j==0 || j==1)
