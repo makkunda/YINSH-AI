@@ -517,7 +517,7 @@ class GameState {
             vector<pair<int,int> > ringpos;
             if(board[0][0]==turn)
                 ringpos.push_back(make_pair(0,0));
-            for(i=0;i<BoardSize;i++)
+            for(i=1;i<=BoardSize;i++)
             {
                 for(j=0;j<6*i;j++)
                 {
@@ -544,11 +544,11 @@ class GameState {
                 for(j=0;j<6;j++)
                 {
                     bool vismark=false;
-                    for(k=0;k<pos[i].size();k++)
+                    for(k=0;k<pos[j].size();k++)
                     {
                         int xi,yi;
-                        xi=pos[i][k].first;
-                        yi=pos[i][k].second;
+                        xi=pos[j][k].first;
+                        yi=pos[j][k].second;
                         if(board[xi][yi]==opp || board[xi][yi]==turn)
                             break;
                         if(board[xi][yi]==mytok || board[xi][yi]==opptok )
