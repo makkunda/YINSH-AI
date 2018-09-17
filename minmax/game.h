@@ -115,6 +115,16 @@ class MoveTables{
                 vector<pair<int,int> > diag_left_up;
                 vector<pair<int,int> > diag_left_down;
                 vector<pair<int,int> > diag_left;
+
+                vert_up.push_back(make_pair(i,j));
+                vert_down.push_back(make_pair(i,j));
+
+                diag_right_up.push_back(make_pair(i,j));
+                diag_right_down.push_back(make_pair(i,j));
+
+                diag_left_up.push_back(make_pair(i,j));
+                diag_left_down.push_back(make_pair(i,j));
+
                 x = ax_x;
                 for(y=ax_y+1;y<=BoardSize;y++)
                 {
@@ -571,7 +581,7 @@ class GameState {
                 for(j=0;j<6;j++)
                 {
                     bool vismark=false;
-                    for(k=0;k<pos[j].size();k++)
+                    for(k=1;k<pos[j].size();k++)
                     {
                         int xi,yi;
                         xi=pos[j][k].first;
@@ -593,7 +603,7 @@ class GameState {
                             temp.board[x][y] = mytok;
                             temp.LastMove = new Move(turn,make_pair(x,y),make_pair(xi,yi));
                             int kp;
-                            for(kp=0;kp<k;kp++)
+                            for(kp=1;kp<k;kp++)
                             {
                                 int xk,yk;
                                 xk=pos[j][kp].first;
