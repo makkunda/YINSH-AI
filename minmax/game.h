@@ -597,6 +597,9 @@ class GameState {
                                 xk=pos[j][kp].first;
                                 yk=pos[j][kp].second;
 
+                                if(temp.board[xk][yk]=='e')
+                                    continue;
+
                                 vector<vector<pair<int,int> > >alllines;
                                 if(j==0 || j==1)
                                 {
