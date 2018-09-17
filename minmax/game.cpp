@@ -831,7 +831,7 @@ vector<pair<int,int> > getline(pair<int,int> st,pair<int,int> end,GameState* S)
     return res;
 }
 
-void mov(string s,GameState* S)
+void ExecuteMove(GameState* S,string s)
 {
     vector<string> v;
     split(s.c_str(),v,' ');
