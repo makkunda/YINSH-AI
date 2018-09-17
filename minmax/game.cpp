@@ -1,6 +1,7 @@
 #include "game.h"
 #include <unordered_map>
-
+#include <string>
+#include <sstream>
 
 class MoveTables{
     public:
@@ -384,10 +385,10 @@ class GameState {
             int bPegs=0,bRings=0,oPegs=0,oRings=0;
             for(i=0;i<board.size();i++){
                 for(j=0;j<board[i].size();j++){
-                    if(board[i][j]=='g'){bPegs+=1}
-                    else if(board[i][j]=='p'){oPegs+=1}
-                    else if(board[i][j]=='b'){bRings+=1}
-                    else if(board[i][j]=='o'){oRings+=1}
+                    if(board[i][j]=='g'){bPegs+=1;}
+                    else if(board[i][j]=='p'){oPegs+=1;}
+                    else if(board[i][j]=='b'){bRings+=1;}
+                    else if(board[i][j]=='o'){oRings+=1;}
                     else{}
                 }
             }
@@ -714,5 +715,143 @@ class GameState {
             return res;
         }
 };
+size_t split(const std::string &txt, std::vector<std::string> &strs, char ch)
+{
+    size_t pos = txt.find( ch );
+    size_t initialPos = 0;
+    strs.clear();
 
+    // Decompose statement
+    while( pos != std::string::npos ) {
+        strs.push_back( txt.substr( initialPos, pos - initialPos ) );
+        initialPos = pos + 1;
 
+        pos = txt.find( ch, initialPos );
+    }
+
+    // Add the last one
+    strs.push_back( txt.substr( initialPos, std::min( pos, txt.size() ) - initialPos + 1 ) );
+
+    return strs.size();
+}
+
+vector<pair<int,int> > getline(pair<int,int> st,pair<int,int> end,GameState* S)
+{
+    vector<pair<int,int> > res;
+    pair<int,int> st_ax = S->table->ours_to_axes[st];
+    pair<int,int> en_ax = S->table->ours_to_axes[st];
+    int x1,y1,x2,y2;
+    x1 = st_ax.first; y1 = st_ax.second;
+    x2 = en_ax.first; y2 = en_ax.second;
+
+    if(x1==x2&&y2==(y1+4))
+    {
+        int i;
+        for(i=0;i<5;i++)
+        {
+            res.push_back(S->table->axes_to_ours[make_pair(x1,y1+i)]);
+        }
+    }
+    else if(x1==x2&&y2==(y1-4))
+    {
+        int i;
+        for(i=4;i>=0;i--)
+        {
+            res.push_back(S->table->axes_to_ours[make_pair(x1,y2+i)]);
+        }
+    } 
+    else if(y1==y2&&x2==(x1+4))
+    {
+        int i;
+        for(i=0;i<5;i++)
+        {
+            res.push_back(S->table->axes_to_ours[make_pair(x1+i,y2)]);
+        }
+    } 
+    else if(y1==y2&&x2==(x1-4))
+    {
+        int i;
+        for(i=4;i>=0;i--)
+        {
+            res.push_back(S->table->axes_to_ours[make_pair(x2+i,y2)]);
+        }
+    } 
+    else if(x2==(x1+4)&&y2==(y1+4))
+    {
+        int i;
+        for(i=0;i<5;i++)
+        {
+            res.push_back(S->table->axes_to_ours[make_pair(x1+i,y1+i)]);
+        }
+    }
+    else
+    {
+        int i;
+        for(i=0;i<5;i++)
+        {
+            res.push_back(S->table->axes_to_ours[make_pair(x2+i,y2+i)]);
+        }
+    }
+    return res;
+}
+
+void mov(string s,GameState* S)
+{
+    vector<string> v;
+    split(s.c_str(),v,' ');
+    if(v[0]=="P")
+    {
+        int x,y;
+        x = atoi(v[1].c_str());
+        y = atoi(v[2].c_str());
+        S->board[x][y] = S->turn;
+    }
+    else
+    {
+        if(v.size()==6)
+        {
+            int x1,y1,x2,y2;
+            x1 = atoi(v[1].c_str());
+            y1 = atoi(v[2].c_str());
+            x2 = atoi(v[4].c_str());
+            y2 = atoi(v[5].c_str());
+            S->board[x2][y2] = S->turn;
+            S->board[x1][y1] = 'e';
+        }
+        else
+        {
+            int x1,y1,x2,y2;
+            x1 = atoi(v[1].c_str());
+            y1 = atoi(v[2].c_str());
+            x2 = atoi(v[4].c_str());
+            y2 = atoi(v[5].c_str());
+            S->board[x2][y2] = S->turn;
+            S->board[x1][y1] = 'e';
+
+            int xs,ys,xe,ye,rx,ry;
+            xs = atoi(v[7].c_str());
+            ys = atoi(v[8].c_str());
+            xe = atoi(v[10].c_str());
+            ye = atoi(v[11].c_str());
+            rx = atoi(v[13].c_str());
+            ry = atoi(v[14].c_str());
+
+            S->board[rx][ry] = 'e';
+
+            vector<pair<int,int> > rempos = getline(make_pair(xs,ys),make_pair(xe,ye),S);
+
+            int i;
+            for(i=0;i<rempos.size();i++)
+            {
+                int x,y;
+                x = rempos[i].first;
+                y = rempos[i].second;
+                S->board[x][y] = 'e';
+            }
+        }
+    }
+    if(S->turn=='b')
+        S->turn = 'o';
+    else
+        S->turn = 'b';
+}
