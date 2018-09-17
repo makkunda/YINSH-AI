@@ -400,7 +400,7 @@ class GameState {
                 board.push_back(temp);
             }
             // deal with the six banned squares here?
-            
+            LastMove = NULL;
             table = ourtable;
             turn = OurTurn;
             RingsRemoved = vector<int>(2,0);
@@ -417,7 +417,12 @@ class GameState {
                     temp.push_back(oth->board[i][j]);
                 }
                 board.push_back(temp);
-                LastMove = new Move(oth->LastMove);
+                if(!(oth->LastMove==NULL)){
+                    LastMove = new Move(oth->LastMove);
+                }
+                else{
+                    LastMove = NULL;
+                }
             }
             
             // deal with the six banned squares here?

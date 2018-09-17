@@ -120,7 +120,7 @@ int main(){
     }
     MoveTables*  FullTable;
     FullTable = new MoveTables(BoardSize);
-    GameState CurrentState(BoardSize, turn, FullTable);
+    GameState CurrentState(BoardSize, 'b', FullTable);
     if(player==1){
         getline(cin, recv);
         ExecuteMove(&CurrentState, recv);
@@ -188,6 +188,7 @@ int main(){
         MoveOut <<"\n";
         cout<<MoveOut.str();
 
+        CurrentState = NewState;
         //execute opponent move
         getline(cin, recv);
         ExecuteMove(&CurrentState, recv);
