@@ -366,10 +366,10 @@ class GameState {
         MoveTables* table;
         GameState(){
         }
-        GameState(int BoardSize, char OurTurn, MoveTables* ourtable){
+        GameState(int BoardSizeIn, char OurTurn, MoveTables* ourtable){
             board = vector<vector<char> > ();
             int i = 0, j = 0;
-            // BoardSize = 5; // num hexagons
+            BoardSize = BoardSizeIn; // num hexagons
             board.push_back(vector<char>(1,'e'));
             for(i=1;i<=BoardSize;i++){
                 vector<char> temp;
@@ -595,7 +595,7 @@ class GameState {
                                     alllines.push_back(vertical(xk,yk));
                                     alllines.push_back(diag_left(xk,yk));
                                 }
-                                else if(j==0 || j==1)
+                                else if(j==4 || j==5)
                                 {
                                     alllines.push_back(diag_right(xk,yk));
                                     alllines.push_back(vertical(xk,yk));
@@ -677,7 +677,7 @@ class GameState {
                                 alllines.push_back(diag_right(xi,yi));
                                 
                             }
-                            else if(j==0 || j==1)
+                            else if(j==4 || j==5)
                             {
                                 alllines.push_back(diag_left(xi,yi));
                             }
