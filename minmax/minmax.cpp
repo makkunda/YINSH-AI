@@ -99,7 +99,7 @@ pair<GameState,float> AlphaBeta(GameState state){
 
 int main(){
     int player, BoardSize, time_given;
-    // srand(time(0));
+    srand(time(0));
     string recv;
     getline(cin, recv);
     vector<string> vv;
@@ -174,6 +174,19 @@ int main(){
     // pair<GameState,float> result;
     while(true){
         // play own move
+        cerr<<endl;
+        int i = 0, j = 0;
+        cerr<<CurrentState.board[0][0]<<endl;
+        for(i=1;i<=BoardSize;i++){
+            vector<char> temp;
+            for(j=0;j<6*i;j++){
+                cerr<<CurrentState.board[i][j]<<" ";
+                // temp.push_back('e');
+            }
+            cerr<<endl;
+        }
+        cerr<<endl;
+
         pair<GameState,float> result = AlphaBeta(CurrentState);
         GameState NewState = result.first;
         stringstream MoveOut;

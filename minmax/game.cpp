@@ -102,7 +102,10 @@ void ExecuteMove(GameState* S,string s)
             x2 = atoi(v[4].c_str());
             y2 = atoi(v[5].c_str());
             S->board[x2][y2] = S->turn;
-            S->board[x1][y1] = 'e';
+            if(S->turn=='b')
+                S->board[x1][y1] = 'g';
+            else
+                S->board[x1][y1] = 'p';
         }
         else
         {
@@ -112,7 +115,10 @@ void ExecuteMove(GameState* S,string s)
             x2 = atoi(v[4].c_str());
             y2 = atoi(v[5].c_str());
             S->board[x2][y2] = S->turn;
-            S->board[x1][y1] = 'e';
+            if(S->turn=='b')
+                S->board[x1][y1] = 'g';
+            else
+                S->board[x1][y1] = 'p';
 
             int xs,ys,xe,ye,rx,ry;
             xs = atoi(v[7].c_str());

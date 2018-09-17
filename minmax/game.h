@@ -173,7 +173,7 @@ class MoveTables{
                     if(x==(BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
                         continue;
                     pair<int,int> nxt_vert = axes_to_ours[make_pair(x,y)];
-                    vert_up.push_back(nxt_vert);
+                    vert.push_back(nxt_vert);
                 }
                 int x_up,x_down;
                 x = ax_x;
@@ -465,7 +465,7 @@ class GameState {
             }
             score += (bPegs - oPegs);
             score += 0.5*(bRings - oRings);
-            score += 5*(RingsRemoved[0] - RingsRemoved[1]);
+            score += 20*(RingsRemoved[0] - RingsRemoved[1]);
         }
 
         vector<pair<int,int> > vertical_up(int x,int y)
