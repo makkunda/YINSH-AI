@@ -629,7 +629,8 @@ class GameState {
                                 {
                                     for(int ii=0;ii<alllines[jp].size();ii++)
                                     {
-                                        if(ii>(alllines[jp].size()-BoardSize))
+                                        int tempvar = ((int)alllines[jp].size()) - BoardSize;
+                                        if(ii>tempvar)
                                             break;
                                         bool linep = true;
                                         for(int jj=ii;jj<(ii+BoardSize);jj++)
@@ -644,48 +645,48 @@ class GameState {
                                                 }
                                         }
                                         if(linep)
+                                        {
+                                            ring_rem = true;
+                                            for(int iii=0;iii<ringpos.size();iii++)
                                             {
-                                                ring_rem = true;
-                                                for(int iii=0;iii<ringpos.size();iii++)
+                                                int rx,ry;
+                                                if(iii==i)
+                                                    {
+                                                        rx = xi;
+                                                        ry = yi;
+                                                    }
+                                                else
                                                 {
-                                                    int rx,ry;
-                                                    if(iii==i)
-                                                        {
-                                                            rx = xi;
-                                                            ry = yi;
-                                                        }
-                                                    else
-                                                    {
-                                                        rx = ringpos[iii].first;
-                                                        ry = ringpos[iii].second;
-                                                    }
-
-                                                    GameState to_push = new GameState(temp);
-                                                    for(int jj=ii;jj<(ii+BoardSize);jj++)
-                                                    {
-                                                        int xxx = alllines[jp][jj].first;
-                                                        int yyy = alllines[jp][jj].second;
-                                                        to_push.board[xxx][yyy]='e';
-                                                    }
-                                                    to_push.board[rx][ry]='e';
-
-                                                    to_push.LastMove->remr.first = rx;
-                                                    to_push.LastMove->remr.second = ry;
-                                                    if(turn=='b'){
-                                                        RingsRemoved[0]+=1;
-                                                    }
-                                                    else if(turn == 'o'){
-                                                        RingsRemoved[1]+=1;
-                                                    }
-                                                    to_push.LastMove->reml_first.first = alllines[jp][ii].first;
-                                                    to_push.LastMove->reml_first.second = alllines[jp][ii].second;
-
-                                                    to_push.LastMove->reml_last.first = alllines[jp][ii+BoardSize-1].first;
-                                                    to_push.LastMove->reml_last.second = alllines[jp][ii+BoardSize-1].second;
-
-                                                    res.push_back(to_push);
+                                                    rx = ringpos[iii].first;
+                                                    ry = ringpos[iii].second;
                                                 }
+
+                                                GameState to_push = new GameState(temp);
+                                                for(int jj=ii;jj<(ii+BoardSize);jj++)
+                                                {
+                                                    int xxx = alllines[jp][jj].first;
+                                                    int yyy = alllines[jp][jj].second;
+                                                    to_push.board[xxx][yyy]='e';
+                                                }
+                                                to_push.board[rx][ry]='e';
+
+                                                to_push.LastMove->remr.first = rx;
+                                                to_push.LastMove->remr.second = ry;
+                                                if(turn=='b'){
+                                                    RingsRemoved[0]+=1;
+                                                }
+                                                else if(turn == 'o'){
+                                                    RingsRemoved[1]+=1;
+                                                }
+                                                to_push.LastMove->reml_first.first = alllines[jp][ii].first;
+                                                to_push.LastMove->reml_first.second = alllines[jp][ii].second;
+
+                                                to_push.LastMove->reml_last.first = alllines[jp][ii+BoardSize-1].first;
+                                                to_push.LastMove->reml_last.second = alllines[jp][ii+BoardSize-1].second;
+
+                                                res.push_back(to_push);
                                             }
+                                        }
                                     }
                                 }
 
@@ -708,12 +709,6 @@ class GameState {
                                 for(int ii=0;ii<alllines[jp].size();ii++){
                                     if(ii > (((int)(alllines[jp].size()))-BoardSize))
                                         break;
-                                    int temp_var = (alllines[jp].size()-BoardSize);
-                                    if(ii > temp_var)
-                                        break;
-                                    if(ii > temp_var) {
-                                        break;
-                                    }
                                     bool linep = true;
                                     for(int jj=ii;jj<(ii+BoardSize);jj++)
                                     {
