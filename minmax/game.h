@@ -363,6 +363,14 @@ class Move{
         reml_first = make_pair(-1,-1);
         reml_last = make_pair(-1,-1);
     }
+    Move(Move* oth){
+        movecolour = oth->movecolour;
+        init = make_pair(oth->init.first,oth->init.second);
+        finl = make_pair(oth->finl.first,oth->finl.second);
+        remr = make_pair(oth->remr.first,oth->remr.second);
+        reml_first = make_pair(oth->reml_first.first,oth->reml_first.second);
+        reml_last = make_pair(oth->reml_last.first,oth->reml_last.second);
+    }
 };
 
 class GameState {
@@ -688,80 +696,81 @@ class GameState {
                             {
                                 alllines.push_back(vertical(xi,yi));
                             }
-                            else if(j==2 || j==3)
-                            {
+                            else if(j==2 || j==3){
                                 alllines.push_back(diag_right(xi,yi));
                                 
                             }
-                            else if(j==4 || j==5)
-                            {
+                            else if(j==4 || j==5){
                                 alllines.push_back(diag_left(xi,yi));
                             }
 
-                            for (int jp=0;jp<1;jp++)
-                                {
-                                    for(int ii=0;ii<alllines[jp].size();ii++)
+                            for (int jp=0;jp<1;jp++){
+                                for(int ii=0;ii<alllines[jp].size();ii++){
+                                    if(ii > (((int)(alllines[jp].size()))-BoardSize))
+                                        break;
+                                    int temp_var = (alllines[jp].size()-BoardSize);
+                                    if(ii > temp_var)
+                                        break;
+                                    if(ii > temp_var) {
+                                        break;
+                                    }
+                                    bool linep = true;
+                                    for(int jj=ii;jj<(ii+BoardSize);jj++)
                                     {
-                                        if(ii>(alllines[jp].size()-BoardSize))
-                                            break;
-                                        bool linep = true;
-                                        for(int jj=ii;jj<(ii+BoardSize);jj++)
-                                        {
-                                            int xx,yy;
-                                            xx = alllines[jp][jj].first;
-                                            yy = alllines[jp][jj].second;
-                                            if(temp.board[xx][yy]!=mytok)
-                                                {
-                                                    linep = false;
-                                                    break;
-                                                }
-                                        }
-                                        if(linep)
+                                        int xx,yy;
+                                        xx = alllines[jp][jj].first;
+                                        yy = alllines[jp][jj].second;
+                                        if(temp.board[xx][yy]!=mytok)
                                             {
-                                                ring_rem = true;
-                                                for(int iii=0;iii<ringpos.size();iii++)
-                                                {
-                                                    int rx,ry;
-                                                    if(iii==i)
-                                                        {
-                                                            rx = xi;
-                                                            ry = yi;
-                                                        }
-                                                    else
-                                                    {
-                                                        rx = ringpos[iii].first;
-                                                        ry = ringpos[iii].second;
-                                                    }
-
-                                                    GameState to_push = new GameState(temp);
-                                                    for(int jj=ii;jj<(ii+BoardSize);jj++)
-                                                    {
-                                                        int xxx = alllines[jp][jj].first;
-                                                        int yyy = alllines[jp][jj].second;
-                                                        to_push.board[xxx][yyy]='e';
-                                                    }
-                                                    to_push.board[rx][ry]='e';
-
-                                                    to_push.LastMove->remr.first = rx;
-                                                    to_push.LastMove->remr.second = ry;
-                                                    if(turn=='b'){
-                                                        RingsRemoved[0]+=1;
-                                                    }
-                                                    else if(turn == 'o'){
-                                                        RingsRemoved[1]+=1;
-                                                    }
-                                                    to_push.LastMove->reml_first.first = alllines[jp][ii].first;
-                                                    to_push.LastMove->reml_first.second = alllines[jp][ii].second;
-
-                                                    to_push.LastMove->reml_last.first = alllines[jp][ii+BoardSize-1].first;
-                                                    to_push.LastMove->reml_last.second = alllines[jp][ii+BoardSize-1].second;
-
-                                                    res.push_back(to_push);
-                                                }
+                                                linep = false;
+                                                break;
                                             }
                                     }
-                                }
+                                    if(linep)
+                                        {
+                                            ring_rem = true;
+                                            for(int iii=0;iii<ringpos.size();iii++)
+                                            {
+                                                int rx,ry;
+                                                if(iii==i)
+                                                    {
+                                                        rx = xi;
+                                                        ry = yi;
+                                                    }
+                                                else
+                                                {
+                                                    rx = ringpos[iii].first;
+                                                    ry = ringpos[iii].second;
+                                                }
 
+                                                GameState to_push = new GameState(temp);
+                                                for(int jj=ii;jj<(ii+BoardSize);jj++)
+                                                {
+                                                    int xxx = alllines[jp][jj].first;
+                                                    int yyy = alllines[jp][jj].second;
+                                                    to_push.board[xxx][yyy]='e';
+                                                }
+                                                to_push.board[rx][ry]='e';
+
+                                                to_push.LastMove->remr.first = rx;
+                                                to_push.LastMove->remr.second = ry;
+                                                if(turn=='b'){
+                                                    RingsRemoved[0]+=1;
+                                                }
+                                                else if(turn == 'o'){
+                                                    RingsRemoved[1]+=1;
+                                                }
+                                                to_push.LastMove->reml_first.first = alllines[jp][ii].first;
+                                                to_push.LastMove->reml_first.second = alllines[jp][ii].second;
+
+                                                to_push.LastMove->reml_last.first = alllines[jp][ii+BoardSize-1].first;
+                                                to_push.LastMove->reml_last.second = alllines[jp][ii+BoardSize-1].second;
+
+                                                res.push_back(to_push);
+                                            }
+                                        }
+                                }
+                            }
                             if(!ring_rem)
                                 res.push_back(temp);
                             if(vismark)
