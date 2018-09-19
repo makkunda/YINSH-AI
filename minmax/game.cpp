@@ -92,7 +92,7 @@ void ExecuteMove(GameState* S,string s)
         y = atoi(v[2].c_str());
         S->board[x][y] = S->turn;
     }
-    else
+    else if(v[0]=="S")
     {
         if(v.size()==6)
         {
@@ -142,8 +142,59 @@ void ExecuteMove(GameState* S,string s)
             }
         }
     }
+    else
+    {
+        int xs,ys,xe,ye,rx,ry;
+        xs = atoi(v[1].c_str());
+        ys = atoi(v[2].c_str());
+        xe = atoi(v[4].c_str());
+        ye = atoi(v[5].c_str());
+        rx = atoi(v[7].c_str());
+        ry = atoi(v[8].c_str());
+
+        S->board[rx][ry] = 'e';
+
+        vector<pair<int,int> > rempos = getline_ours(make_pair(xs,ys),make_pair(xe,ye),S);
+
+        int i;
+        for(i=0;i<rempos.size();i++)
+        {
+            int x,y;
+            x = rempos[i].first;
+            y = rempos[i].second;
+            S->board[x][y] = 'e';
+        }
+
+        int x1,y1,x2,y2;
+        x1 = atoi(v[10].c_str());
+        y1 = atoi(v[11].c_str());
+        x2 = atoi(v[13].c_str());
+        y2 = atoi(v[14].c_str());
+        S->board[x2][y2] = S->turn;
+        if(S->turn=='b')
+            S->board[x1][y1] = 'g';
+        else
+            S->board[x1][y1] = 'p';
+    }
     if(S->turn=='b')
         S->turn = 'o';
     else
         S->turn = 'b';
 }
+
+
+vector<GameState> cleaner_in(GameState s)
+{
+    vector<GameState> res;
+    res.push_back(s);
+    return res;
+}
+
+vector<GameState> cleaner_out(GameState s)
+{
+    vector<GameState> res;
+    res.push_back(s);
+    return res;
+}
+
+
