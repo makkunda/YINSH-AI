@@ -9,6 +9,9 @@
         "iostream": "cpp",
         "istream": "cpp",
         "ostream": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "limits": "cpp",
+        "system_error": "cpp",
+        "type_traits": "cpp"
     }
 }

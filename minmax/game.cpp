@@ -23,6 +23,7 @@ size_t split_ours(const string &txt, vector<string> &strs, char ch)
 
 vector<pair<int,int> > getline_ours(pair<int,int> st,pair<int,int> end,GameState* S)
 {
+    float f = 1/0;
     vector<pair<int,int> > res;
     pair<int,int> st_ax = S->table->ours_to_axes[st];
     pair<int,int> en_ax = S->table->ours_to_axes[st];
@@ -81,6 +82,77 @@ vector<pair<int,int> > getline_ours(pair<int,int> st,pair<int,int> end,GameState
     return res;
 }
 
+vector<pair<int,int> > getline_ours_gen(pair<int,int> st,pair<int,int> end,GameState* S)
+{
+    vector<pair<int,int> > res;
+    pair<int,int> st_ax = S->table->ours_to_axes[st];
+    pair<int,int> en_ax = S->table->ours_to_axes[end];
+    int x1,y1,x2,y2;
+    x1 = st_ax.first; y1 = st_ax.second;
+    x2 = en_ax.first; y2 = en_ax.second;
+    int bs = S->BoardSize;
+    if(x1==x2)
+    {
+        if(y2>y1)
+        {
+            int i;
+            for(i=y1;i<=y2;i++)
+            {
+                res.push_back(S->table->axes_to_ours[make_pair(x1,i)]);
+            }
+        }
+        else
+        {
+            int i;
+            for(i=y1;i>=y2;i--)
+            {
+                res.push_back(S->table->axes_to_ours[make_pair(x1,i)]);
+            }
+        }
+    }
+    else if(y1==y2)
+    {
+        if(x2>x1)
+        {
+            int i;
+            for(i=x1;i<=x2;i++)
+            {
+                res.push_back(S->table->axes_to_ours[make_pair(i,y1)]);
+            }
+        }
+        else
+        {
+            int i;
+            for(i=x1;i>=x2;i--)
+            {
+                res.push_back(S->table->axes_to_ours[make_pair(i,y1)]);
+            }
+        }
+    } 
+    else
+    {
+        if(y2>y1)
+        {
+            int diff = y2 - y1;
+            int i;
+            for(i=0;i<=diff;i++)
+            {
+                res.push_back(S->table->axes_to_ours[make_pair(x1+i,y1+i)]);
+            }
+        }
+        else
+        {
+            int diff = y1 - y2;
+            int i;
+            for(i=diff;i>=0;i--)
+            {
+                res.push_back(S->table->axes_to_ours[make_pair(x2+i,y2+i)]);
+            }
+        }
+    }
+    return res;
+}
+
 void ExecuteMove(GameState* S,string s)
 {
     vector<string> v;
@@ -108,7 +180,7 @@ void ExecuteMove(GameState* S,string s)
 
             S->board[rx][ry] = 'e';
 
-            vector<pair<int,int> > rempos = getline_ours(make_pair(xs,ys),make_pair(xe,ye),S);
+            vector<pair<int,int> > rempos = getline_ours_gen(make_pair(xs,ys),make_pair(xe,ye),S);
 
             int i;
             for(i=0;i<rempos.size();i++)
@@ -118,6 +190,11 @@ void ExecuteMove(GameState* S,string s)
                 y = rempos[i].second;
                 S->board[x][y] = 'e';
             }
+            //added
+            if(S->turn=='b')
+                S->RingsRemoved[0]+=1;
+            else
+                S->RingsRemoved[1]+=1;
 
             cur = cur + 9;
         }
@@ -133,7 +210,7 @@ void ExecuteMove(GameState* S,string s)
         else
             S->board[x1][y1] = 'p';
         
-        vector<pair<int,int> > rempos = getline_ours(make_pair(x1,y1),make_pair(x2,y2),S);
+        vector<pair<int,int> > rempos = getline_ours_gen(make_pair(x1,y1),make_pair(x2,y2),S);
 
             int i;
             for(i=1;(i+1)<rempos.size();i++)
@@ -164,7 +241,7 @@ void ExecuteMove(GameState* S,string s)
 
             S->board[rx][ry] = 'e';
 
-            vector<pair<int,int> > rempos = getline_ours(make_pair(xs,ys),make_pair(xe,ye),S);
+            vector<pair<int,int> > rempos = getline_ours_gen(make_pair(xs,ys),make_pair(xe,ye),S);
 
             int i;
             for(i=0;i<rempos.size();i++)
@@ -174,7 +251,12 @@ void ExecuteMove(GameState* S,string s)
                 y = rempos[i].second;
                 S->board[x][y] = 'e';
             }
-            
+            //added
+            if(S->turn=='b')
+                S->RingsRemoved[0]+=1;
+            else
+                S->RingsRemoved[1]+=1;
+
             cur = cur + 9;
         }
 
@@ -371,7 +453,7 @@ vector<GameState> cleaner_in(GameState s)
                 temp.LastMove->beg_rem_first.push_back(line_pos[i].first);
                 temp.LastMove->beg_rem_last.push_back(line_pos[i].second);
 
-                vector<pair<int,int> > rempos = getline_ours(line_pos[i].first,line_pos[i].second,&temp);
+                vector<pair<int,int> > rempos = getline_ours_gen(line_pos[i].first,line_pos[i].second,&temp);
 
                 temp.board[ringpos[j].first][ringpos[j].second] = 'e';
 
@@ -379,6 +461,11 @@ vector<GameState> cleaner_in(GameState s)
                 {
                     temp.board[rempos[k].first][rempos[k].second] = 'e';
                 }
+
+                if(temp.turn=='b')
+                    temp.RingsRemoved[0]+=1;
+                else
+                    temp.RingsRemoved[1]+=1;
 
                 vector<GameState> recurse = cleaner_in(temp);
 
@@ -432,7 +519,7 @@ vector<GameState> cleaner_out(GameState s)
                 temp.LastMove->end_rem_first.push_back(line_pos[i].first);
                 temp.LastMove->end_rem_last.push_back(line_pos[i].second);
 
-                vector<pair<int,int> > rempos = getline_ours(line_pos[i].first,line_pos[i].second,&temp);
+                vector<pair<int,int> > rempos = getline_ours_gen(line_pos[i].first,line_pos[i].second,&temp);
 
                 temp.board[ringpos[j].first][ringpos[j].second] = 'e';
 
@@ -440,7 +527,10 @@ vector<GameState> cleaner_out(GameState s)
                 {
                     temp.board[rempos[k].first][rempos[k].second] = 'e';
                 }
-
+                if(temp.turn=='b')
+                    temp.RingsRemoved[0]+=1;
+                else
+                    temp.RingsRemoved[1]+=1;
                 vector<GameState> recurse = cleaner_out(temp);
 
                 for(k=0;k<recurse.size();k++)
@@ -453,6 +543,27 @@ vector<GameState> cleaner_out(GameState s)
     return res;
 }
 
-
-
->>>>>>> eef63d9...  hopefully done
+vector<GameState> FinalGetValidMoves(GameState s){
+    s.LastMove = new Move('a',make_pair(-1,-1), make_pair(-1,-1));
+    vector<GameState> FirstCleaned = cleaner_in(s);
+    vector<GameState> Middle;
+    int i;
+    for(i=0;i<FirstCleaned.size();i++){
+        vector<GameState> MiddleValid = FirstCleaned[i].GetValidMoves();
+        Middle.reserve(Middle.size()+ MiddleValid.size());
+        Middle.insert(Middle.end(),MiddleValid.begin(),MiddleValid.end());
+    }
+    vector<GameState> Output;
+    for(i=0;i<Middle.size();i++){
+        vector<GameState> OutputValid = cleaner_out(Middle[i]);
+        Output.reserve(Output.size()+ OutputValid.size());
+        Output.insert(Output.end(),OutputValid.begin(),OutputValid.end());
+    }
+    for(i=0;i<Output.size();i++){
+        if(Output[i].turn=='b')
+            Output[i].turn ='o';
+        else
+            Output[i].turn ='b';
+    }
+    return Output;
+}

@@ -1,25 +1,27 @@
 #include "game.h"
 
 const int MAX_DEPTH = 3;
+const float MY_FLOAT_MAX =  numeric_limits<float>::max();
+const float MY_FLOAT_MIN =  -numeric_limits<float>::max();
 
 
 float MinMaxInternal(GameState state, int depth, bool maximizing, char OriginTurn){
     if((depth==0) || (state.GameEnded())){
-        return state.EvaluateHeuristic(OriginTurn);
+        return state.EvaluateHeuristicAdvanced(OriginTurn);
     }
     else{
         float value;
-        vector<GameState> NextStates = state.GetValidMoves();
+        vector<GameState> NextStates = FinalGetValidMoves(state);
         int i=0;
         if(maximizing){
-            value = numeric_limits<float>::min();
+            value = MY_FLOAT_MIN;
             for(i=0;i<NextStates.size();i++){
                 value = max(value, MinMaxInternal(NextStates[i], depth-1, false, OriginTurn));
             }
             return value;
         }
         else{
-            value = numeric_limits<float>::max();
+            value = MY_FLOAT_MAX;
             for(i=0;i<NextStates.size();i++){
                 value = min(value, MinMaxInternal(NextStates[i], depth-1, true, OriginTurn));
             }
@@ -31,16 +33,16 @@ float MinMaxInternal(GameState state, int depth, bool maximizing, char OriginTur
 
 pair<GameState,float> MinMax(GameState state, char OriginTurn){
     float value, temp;
-    vector<GameState> NextStates = state.GetValidMoves();
+    vector<GameState> NextStates = FinalGetValidMoves(state);
     int i=0;
     GameState BestState;
-    value = numeric_limits<float>::min();
+    value = MY_FLOAT_MIN;
     for(i=0;i<NextStates.size();i++){
         // cout<<i<<endl;
         temp = max(value, MinMaxInternal(NextStates[i], MAX_DEPTH-1, false, OriginTurn));
         if(temp>value){
             value = temp;
-            BestState = NextStates[i];
+            BestState = GameState(&NextStates[i]);
         }
     }
     // cout<<"Exiting"<<endl;
@@ -50,14 +52,14 @@ pair<GameState,float> MinMax(GameState state, char OriginTurn){
 
 float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha, float beta, char OriginTurn){
     if((depth==0) || (state.GameEnded())){
-        return state.EvaluateHeuristic(OriginTurn);
+        return state.EvaluateHeuristicAdvanced(OriginTurn);
     }
     else{
         float value;
-        vector<GameState> NextStates = state.GetValidMoves();
+        vector<GameState> NextStates = FinalGetValidMoves(state);
         int i=0;
         if(maximizing){
-            value = numeric_limits<float>::min();
+            value = MY_FLOAT_MIN;
             for(i=0;i<NextStates.size();i++){
                 value = max(value, AlphaBetaInternal(NextStates[i], depth-1, false, alpha, beta, OriginTurn));
                 alpha = max(alpha, value);
@@ -68,7 +70,7 @@ float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha
             return value;
         }
         else{
-            value = numeric_limits<float>::max();
+            value = MY_FLOAT_MAX;
             for(i=0;i<NextStates.size();i++){
                 value = min(value, AlphaBetaInternal(NextStates[i], depth-1, true, alpha, beta, OriginTurn));
                 beta = min(beta,value);
@@ -83,15 +85,15 @@ float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha
 
 pair<GameState,float> AlphaBeta(GameState state, char OriginTurn){
     float value, temp;
-    vector<GameState> NextStates = state.GetValidMoves();
+    vector<GameState> NextStates = FinalGetValidMoves(state);
     int i=0;
     GameState BestState;
-    value = numeric_limits<float>::min();
+    value = MY_FLOAT_MIN;
     for(i=0;i<NextStates.size();i++){
-        temp = max(value, AlphaBetaInternal(NextStates[i], MAX_DEPTH-1, false, numeric_limits<float>::min(), numeric_limits<float>::max(), OriginTurn));
+        temp = max(value, AlphaBetaInternal(NextStates[i], MAX_DEPTH-1, false, MY_FLOAT_MIN, MY_FLOAT_MAX, OriginTurn));
         if(temp>value){
             value = temp;
-            BestState = NextStates[i];
+            BestState = GameState(&NextStates[i]);
         }
     }
     return make_pair(BestState,value);
@@ -100,6 +102,8 @@ pair<GameState,float> AlphaBeta(GameState state, char OriginTurn){
 int main(){
     int player, BoardSize, time_given;
     srand(time(0));
+    // srand(66);
+
     string recv;
     getline(cin, recv);
     vector<string> vv;
@@ -221,21 +225,25 @@ int main(){
         }
         cerr<<endl;
 
-        pair<GameState,float> result = AlphaBeta(CurrentState, turn);
+        pair<GameState,float> result = MinMax(CurrentState, turn);
         GameState NewState = result.first;
         stringstream MoveOut;
-
+        for(i=0;i<NewState.LastMove->beg_remr.size();i++){
+            MoveOut << " RS " << NewState.LastMove->beg_rem_first[i].first<<" "<<NewState.LastMove->beg_rem_first[i].second;
+            MoveOut << " RE " << NewState.LastMove->beg_rem_last[i].first<<" "<<NewState.LastMove->beg_rem_last[i].second;
+            MoveOut << " X " << NewState.LastMove->beg_remr[i].first<<" "<<NewState.LastMove->beg_remr[i].second;
+        }
         MoveOut << "S " << NewState.LastMove->init.first<<" "<<NewState.LastMove->init.second;
         MoveOut << " M " << NewState.LastMove->finl.first<<" "<<NewState.LastMove->finl.second;
-        if(NewState.LastMove->remr.first != -1){
-            MoveOut << " RS " << NewState.LastMove->reml_first.first<<" "<<NewState.LastMove->reml_first.second;
-            MoveOut << " RE " << NewState.LastMove->reml_last.first<<" "<<NewState.LastMove->reml_last.second;
-            MoveOut << " X " << NewState.LastMove->remr.first<<" "<<NewState.LastMove->remr.second;
+        for(i=0;i<NewState.LastMove->end_remr.size();i++){
+            MoveOut << " RS " << NewState.LastMove->end_rem_first[i].first<<" "<<NewState.LastMove->end_rem_first[i].second;
+            MoveOut << " RE " << NewState.LastMove->end_rem_last[i].first<<" "<<NewState.LastMove->end_rem_last[i].second;
+            MoveOut << " X " << NewState.LastMove->end_remr[i].first<<" "<<NewState.LastMove->end_remr[i].second;
         }
         MoveOut <<"\n";
         cout<<MoveOut.str();
 
-        CurrentState = NewState;
+        CurrentState = GameState(&NewState);
         //execute opponent move
         getline(cin, recv);
         ExecuteMove(&CurrentState, recv);

@@ -660,10 +660,10 @@ class GameState {
             // score += 2*(bCombo[2]-oCombo[2]);
             score += (bPegs - oPegs);                     
             score += 2*(bCombo[2]-oCombo[2]);
-            score += 3*(bCombo[3]-oCombo[3]);            
-            score += 5*(bCombo[4]-oCombo[4]);
+            score += 4*(bCombo[3]-oCombo[3]);            
+            score += 8*(bCombo[4]-oCombo[4]);
             // score += 0.5*(bRings - oRings);
-            score += 25*(RingsRemoved[0] - RingsRemoved[1]);
+            score += 350*(RingsRemoved[0] - RingsRemoved[1]);
             if(OriginTurn=='o'){
                 score = -score;
             }
@@ -788,10 +788,10 @@ class GameState {
                         else
                         {
                             GameState temp = new GameState(this);     
-                            if(turn=='b')
-                                temp.turn ='o';
-                            else
-                                temp.turn ='b';
+                            // if(turn=='b')
+                            //     temp.turn ='o';
+                            // else
+                            //     temp.turn ='b';
                             temp.board[xi][yi] = turn;
                             temp.board[x][y] = mytok;
                             temp.LastMove = new Move(turn,make_pair(x,y),make_pair(xi,yi));
@@ -823,3 +823,4 @@ class GameState {
 size_t split_ours(const string &txt, vector<string> &strs, char ch);
 vector<pair<int,int> > getline_ours(pair<int,int> st,pair<int,int> end,GameState* S);
 void ExecuteMove(GameState* S,string s);
+vector<GameState> FinalGetValidMoves(GameState s);
