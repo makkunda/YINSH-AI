@@ -378,25 +378,37 @@ class Move{
     char movecolour;
     pair<int,int> init;
     pair<int,int> finl;
-    pair<int,int> remr;
-    pair<int,int> reml_first;
-    pair<int,int> reml_last;
+    vector<pair<int,int> > beg_remr;
+    vector<pair<int,int> > beg_rem_first;
+    vector<pair<int,int> > beg_rem_last;
+    vector<pair<int,int> > end_remr;
+    vector<pair<int,int> > end_rem_first;
+    vector<pair<int,int> > end_rem_last;
     Move(char mv,pair<int,int> init_in,pair<int,int> finl_in)
     {
         movecolour = mv;
         init = make_pair(init_in.first,init_in.second);
         finl = make_pair(finl_in.first,finl_in.second);
-        remr = make_pair(-1,-1);
-        reml_first = make_pair(-1,-1);
-        reml_last = make_pair(-1,-1);
+        beg_remr = vector<pair<int,int> > ();
+        beg_rem_first = vector<pair<int,int> > ();
+        beg_rem_last = vector<pair<int,int> > ();
+        end_remr = vector<pair<int,int> > ();
+        end_rem_first = vector<pair<int,int> > ();
+        end_rem_last = vector<pair<int,int> > ();
     }
     Move(Move* oth){
         movecolour = oth->movecolour;
         init = make_pair(oth->init.first,oth->init.second);
         finl = make_pair(oth->finl.first,oth->finl.second);
-        remr = make_pair(oth->remr.first,oth->remr.second);
-        reml_first = make_pair(oth->reml_first.first,oth->reml_first.second);
-        reml_last = make_pair(oth->reml_last.first,oth->reml_last.second);
+        // remr = make_pair(oth->remr.first,oth->remr.second);
+        // reml_first = make_pair(oth->reml_first.first,oth->reml_first.second);
+        // reml_last = make_pair(oth->reml_last.first,oth->reml_last.second);
+        beg_remr = oth->beg_remr;
+        beg_rem_first = oth->beg_rem_first;
+        beg_rem_last = oth->beg_rem_last;
+        end_remr = oth->end_remr;
+        end_rem_first = oth->end_rem_first;
+        end_rem_last = oth->end_rem_last;
     }
 };
 
@@ -794,177 +806,7 @@ class GameState {
                                 else if(temp.board[xk][yk]==opptok)
                                     temp.board[xk][yk]=mytok;
                             }
-                            bool ring_rem=false;
-
-                            for(kp=0;kp<k;kp++)
-                            {
-                                int xk,yk;
-                                xk=pos[j][kp].first;
-                                yk=pos[j][kp].second;
-
-                                if(temp.board[xk][yk]=='e')
-                                    continue;
-
-                                vector<vector<pair<int,int> > >alllines;
-                                if(j==0 || j==1)
-                                {
-                                    alllines.push_back(diag_right(xk,yk));
-                                    alllines.push_back(diag_left(xk,yk));
-                                }
-                                else if(j==2 || j==3)
-                                {
-                                    alllines.push_back(vertical(xk,yk));
-                                    alllines.push_back(diag_left(xk,yk));
-                                }
-                                else if(j==4 || j==5)
-                                {
-                                    alllines.push_back(diag_right(xk,yk));
-                                    alllines.push_back(vertical(xk,yk));
-                                }
-
-                                for (int jp=0;jp<2;jp++)
-                                {
-                                    for(int ii=0;ii<alllines[jp].size();ii++)
-                                    {
-                                        int tempvar = ((int)alllines[jp].size()) - BoardSize;
-                                        if(ii>tempvar)
-                                            break;
-                                        bool linep = true;
-                                        for(int jj=ii;jj<(ii+BoardSize);jj++)
-                                        {
-                                            int xx,yy;
-                                            xx = alllines[jp][jj].first;
-                                            yy = alllines[jp][jj].second;
-                                            if(temp.board[xx][yy]!=mytok)
-                                                {
-                                                    linep = false;
-                                                    break;
-                                                }
-                                        }
-                                        if(linep)
-                                        {
-                                            ring_rem = true;
-                                            for(int iii=0;iii<ringpos.size();iii++)
-                                            {
-                                                int rx,ry;
-                                                if(iii==i)
-                                                    {
-                                                        rx = xi;
-                                                        ry = yi;
-                                                    }
-                                                else
-                                                {
-                                                    rx = ringpos[iii].first;
-                                                    ry = ringpos[iii].second;
-                                                }
-
-                                                GameState to_push = new GameState(temp);
-                                                for(int jj=ii;jj<(ii+BoardSize);jj++)
-                                                {
-                                                    int xxx = alllines[jp][jj].first;
-                                                    int yyy = alllines[jp][jj].second;
-                                                    to_push.board[xxx][yyy]='e';
-                                                }
-                                                to_push.board[rx][ry]='e';
-
-                                                to_push.LastMove->remr.first = rx;
-                                                to_push.LastMove->remr.second = ry;
-                                                if(turn=='b'){
-                                                    RingsRemoved[0]+=1;
-                                                }
-                                                else if(turn == 'o'){
-                                                    RingsRemoved[1]+=1;
-                                                }
-                                                to_push.LastMove->reml_first.first = alllines[jp][ii].first;
-                                                to_push.LastMove->reml_first.second = alllines[jp][ii].second;
-
-                                                to_push.LastMove->reml_last.first = alllines[jp][ii+BoardSize-1].first;
-                                                to_push.LastMove->reml_last.second = alllines[jp][ii+BoardSize-1].second;
-
-                                                res.push_back(to_push);
-                                            }
-                                        }
-                                    }
-                                }
-
-                            }
-
-                            vector<vector<pair<int,int> > >alllines;
-                            if(j==0 || j==1)
-                            {
-                                alllines.push_back(vertical(xi,yi));
-                            }
-                            else if(j==2 || j==3){
-                                alllines.push_back(diag_right(xi,yi));
-                                
-                            }
-                            else if(j==4 || j==5){
-                                alllines.push_back(diag_left(xi,yi));
-                            }
-
-                            for (int jp=0;jp<1;jp++){
-                                for(int ii=0;ii<alllines[jp].size();ii++){
-                                    if(ii > (((int)(alllines[jp].size()))-BoardSize))
-                                        break;
-                                    bool linep = true;
-                                    for(int jj=ii;jj<(ii+BoardSize);jj++)
-                                    {
-                                        int xx,yy;
-                                        xx = alllines[jp][jj].first;
-                                        yy = alllines[jp][jj].second;
-                                        if(temp.board[xx][yy]!=mytok)
-                                            {
-                                                linep = false;
-                                                break;
-                                            }
-                                    }
-                                    if(linep)
-                                        {
-                                            ring_rem = true;
-                                            for(int iii=0;iii<ringpos.size();iii++)
-                                            {
-                                                int rx,ry;
-                                                if(iii==i)
-                                                    {
-                                                        rx = xi;
-                                                        ry = yi;
-                                                    }
-                                                else
-                                                {
-                                                    rx = ringpos[iii].first;
-                                                    ry = ringpos[iii].second;
-                                                }
-
-                                                GameState to_push = new GameState(temp);
-                                                for(int jj=ii;jj<(ii+BoardSize);jj++)
-                                                {
-                                                    int xxx = alllines[jp][jj].first;
-                                                    int yyy = alllines[jp][jj].second;
-                                                    to_push.board[xxx][yyy]='e';
-                                                }
-                                                to_push.board[rx][ry]='e';
-
-                                                to_push.LastMove->remr.first = rx;
-                                                to_push.LastMove->remr.second = ry;
-                                                if(turn=='b'){
-                                                    RingsRemoved[0]+=1;
-                                                }
-                                                else if(turn == 'o'){
-                                                    RingsRemoved[1]+=1;
-                                                }
-                                                to_push.LastMove->reml_first.first = alllines[jp][ii].first;
-                                                to_push.LastMove->reml_first.second = alllines[jp][ii].second;
-
-                                                to_push.LastMove->reml_last.first = alllines[jp][ii+BoardSize-1].first;
-                                                to_push.LastMove->reml_last.second = alllines[jp][ii+BoardSize-1].second;
-
-                                                res.push_back(to_push);
-                                            }
-                                        }
-                                }
-                            }
-                            if(!ring_rem)
-                                res.push_back(temp);
+                            res.push_back(temp);
                             if(vismark)
                                 break;
                         }
