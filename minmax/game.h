@@ -31,6 +31,10 @@ class MoveTables{
     unordered_map<pair<int,int>,pair<int,int> > ours_to_axes;
     unordered_map<pair<int,int>,pair<int,int> > axes_to_ours;
 
+    vector<pair<int,int> > vertical_gen;
+    vector<pair<int,int> > diag_right_gen;
+    vector<pair<int,int> > diag_left_gen;
+    
     // map<pair<int,int>,vector<pair<int,int> > > vertical_up_map;
     // map<pair<int,int>,vector<pair<int,int> > > vertical_down_map;
     // map<pair<int,int>,vector<pair<int,int> > > diag_right_up_map;
@@ -350,7 +354,20 @@ class MoveTables{
             }
         }
 
-
+        for(i=-BoardSize+1;i<BoardSize;i++){
+            vertical_gen.push_back(axes_to_ours[make_pair(i,0)]);
+            diag_right_gen.push_back(axes_to_ours[make_pair(i,0)]);
+        }
+        vertical_gen.push_back(axes_to_ours[make_pair(-BoardSize,-1)]);
+        vertical_gen.push_back(axes_to_ours[make_pair(BoardSize,1)]);
+        diag_right_gen.push_back(axes_to_ours[make_pair(BoardSize-1,-1)]);
+        diag_right_gen.push_back(axes_to_ours[make_pair(-BoardSize+1,1)]);
+        for(i=-BoardSize+1;i<BoardSize;i++){
+            diag_left_gen.push_back(axes_to_ours[make_pair(i,i)]);
+        }
+        diag_left_gen.push_back(axes_to_ours[make_pair(-BoardSize+1,-BoardSize)]);
+        diag_left_gen.push_back(axes_to_ours[make_pair(BoardSize-1,BoardSize)]);
+        
 
     }
 
@@ -481,6 +498,166 @@ class GameState {
             }
             return score;
         }
+        float EvaluateHeuristicAdvanced(char OriginTurn){
+            float score = 0;
+            int i,j;
+            int bPegs=0,bRings=0,oPegs=0,oRings=0;
+
+            for(i=0;i<board.size();i++){
+                for(j=0;j<board[i].size();j++){
+                    if(board[i][j]=='g'){
+                        bPegs+=1;
+                    }
+                    else if(board[i][j]=='p'){
+                        oPegs+=1;
+                    }
+                    else if(board[i][j]=='b'){
+                        bRings+=1;
+                    }
+                    else if(board[i][j]=='o'){
+                        oRings+=1;
+                    }
+                    else{}
+                }
+            }
+            vector<pair<int,int> > iter_map;
+            int combo_pegs_len;
+            char combo_pegs_color = '0';
+            vector<int> bCombo(6,0); // first two elements useless
+            vector<int> oCombo(6,0); // first two elements useless
+            bCombo[0] = -1000;
+            oCombo[0] = -1000;
+            bCombo[1] = -1000;
+            oCombo[1] = -1000;
+            int bThwart = 0; // means b player has ring just after a combo of more than two of other's pegs
+            int oThwart = 0; // these are one sided for now
+            for(i=0;i<table->vertical_gen.size();i++){
+                iter_map = table->vertical_map[table->vertical_gen[i]];
+                combo_pegs_len = 0;
+                combo_pegs_color = 'a';
+                for(j=0;j<iter_map.size();j++){
+                    if((combo_pegs_color=='p')&&(combo_pegs_len>2)&&(board[iter_map[j].first][iter_map[j].second]=='b')){
+                        bThwart++;
+                    }
+                    if((combo_pegs_color=='g')&&(combo_pegs_len>2)&&(board[iter_map[j].first][iter_map[j].second]=='o')){
+                        oThwart++;
+                    }
+                    if(combo_pegs_color == board[iter_map[j].first][iter_map[j].second]){
+                        combo_pegs_len++;
+                        if(combo_pegs_len>1){
+                            if(combo_pegs_color=='g'){
+                                bCombo[combo_pegs_len]++;
+                            }
+                            else if(combo_pegs_color=='p'){
+                                oCombo[combo_pegs_len]++;
+                            }
+                        }
+                    }
+                    else{
+                        if(board[iter_map[j].first][iter_map[j].second]=='g'){
+                            combo_pegs_color = 'g';
+                            combo_pegs_len=1;
+                        }
+                        else if(board[iter_map[j].first][iter_map[j].second]=='p'){
+                            combo_pegs_color = 'p';
+                            combo_pegs_len=1;
+                        }
+                        else{
+                            combo_pegs_color = 'a';
+                            combo_pegs_len=0;
+                        }
+                    }
+                }
+            }
+            for(i=0;i<table->diag_left_gen.size();i++){
+                iter_map = table->diag_left_map[table->diag_left_gen[i]];
+                combo_pegs_len = 0;
+                combo_pegs_color = 'a';
+                for(j=0;j<iter_map.size();j++){
+                    if((combo_pegs_color=='p')&&(combo_pegs_len>2)&&(board[iter_map[j].first][iter_map[j].second]=='b')){
+                        bThwart++;
+                    }
+                    if((combo_pegs_color=='g')&&(combo_pegs_len>2)&&(board[iter_map[j].first][iter_map[j].second]=='o')){
+                        oThwart++;
+                    }
+                    if(combo_pegs_color == board[iter_map[j].first][iter_map[j].second]){
+                        combo_pegs_len++;
+                        if(combo_pegs_len>1){
+                            if(combo_pegs_color=='g'){
+                                bCombo[combo_pegs_len]++;
+                            }
+                            else if(combo_pegs_color=='p'){
+                                oCombo[combo_pegs_len]++;
+                            }
+                        }
+                    }
+                    else{
+                        if(board[iter_map[j].first][iter_map[j].second]=='g'){
+                            combo_pegs_color = 'g';
+                            combo_pegs_len=1;
+                        }
+                        else if(board[iter_map[j].first][iter_map[j].second]=='p'){
+                            combo_pegs_color = 'p';
+                            combo_pegs_len=1;
+                        }
+                        else{
+                            combo_pegs_color = 'a';
+                            combo_pegs_len=0;
+                        }
+                    }
+                }
+            }
+            for(i=0;i<table->diag_right_gen.size();i++){
+                iter_map = table->diag_right_map[table->diag_right_gen[i]];
+                combo_pegs_len = 0;
+                combo_pegs_color = 'a';
+                for(j=0;j<iter_map.size();j++){
+                    if((combo_pegs_color=='p')&&(combo_pegs_len>2)&&(board[iter_map[j].first][iter_map[j].second]=='b')){
+                        bThwart++;
+                    }
+                    if((combo_pegs_color=='g')&&(combo_pegs_len>2)&&(board[iter_map[j].first][iter_map[j].second]=='o')){
+                        oThwart++;
+                    }
+                    if(combo_pegs_color == board[iter_map[j].first][iter_map[j].second]){
+                        combo_pegs_len++;
+                        if(combo_pegs_len>1){
+                            if(combo_pegs_color=='g'){
+                                bCombo[combo_pegs_len]++;
+                            }
+                            else if(combo_pegs_color=='p'){
+                                oCombo[combo_pegs_len]++;
+                            }
+                        }
+                    }
+                    else{
+                        if(board[iter_map[j].first][iter_map[j].second]=='g'){
+                            combo_pegs_color = 'g';
+                            combo_pegs_len=1;
+                        }
+                        else if(board[iter_map[j].first][iter_map[j].second]=='p'){
+                            combo_pegs_color = 'p';
+                            combo_pegs_len=1;
+                        }
+                        else{
+                            combo_pegs_color = 'a';
+                            combo_pegs_len=0;
+                        }
+                    }
+                }
+            }
+            // score += 2*(bCombo[2]-oCombo[2]);
+            score += (bPegs - oPegs);                     
+            score += 2*(bCombo[2]-oCombo[2]);
+            score += 3*(bCombo[3]-oCombo[3]);            
+            score += 5*(bCombo[4]-oCombo[4]);
+            // score += 0.5*(bRings - oRings);
+            score += 25*(RingsRemoved[0] - RingsRemoved[1]);
+            if(OriginTurn=='o'){
+                score = -score;
+            }
+            return score;
+        }
+
 
         vector<pair<int,int> > vertical_up(int x,int y)
         {
