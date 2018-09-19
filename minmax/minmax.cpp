@@ -3,9 +3,9 @@
 const int MAX_DEPTH = 3;
 
 
-float MinMaxInternal(GameState state, int depth, bool maximizing){
+float MinMaxInternal(GameState state, int depth, bool maximizing, char OriginTurn){
     if((depth==0) || (state.GameEnded())){
-        return state.EvaluateHeuristic();
+        return state.EvaluateHeuristic(OriginTurn);
     }
     else{
         float value;
@@ -14,14 +14,14 @@ float MinMaxInternal(GameState state, int depth, bool maximizing){
         if(maximizing){
             value = numeric_limits<float>::min();
             for(i=0;i<NextStates.size();i++){
-                value = max(value, MinMaxInternal(NextStates[i], depth-1, false));
+                value = max(value, MinMaxInternal(NextStates[i], depth-1, false, OriginTurn));
             }
             return value;
         }
         else{
             value = numeric_limits<float>::max();
             for(i=0;i<NextStates.size();i++){
-                value = min(value, MinMaxInternal(NextStates[i], depth-1, true));
+                value = min(value, MinMaxInternal(NextStates[i], depth-1, true, OriginTurn));
             }
             return value;
         }
@@ -29,7 +29,7 @@ float MinMaxInternal(GameState state, int depth, bool maximizing){
 }
 
 
-pair<GameState,float> MinMax(GameState state){
+pair<GameState,float> MinMax(GameState state, char OriginTurn){
     float value, temp;
     vector<GameState> NextStates = state.GetValidMoves();
     int i=0;
@@ -37,7 +37,7 @@ pair<GameState,float> MinMax(GameState state){
     value = numeric_limits<float>::min();
     for(i=0;i<NextStates.size();i++){
         // cout<<i<<endl;
-        temp = max(value, MinMaxInternal(NextStates[i], MAX_DEPTH-1, false));
+        temp = max(value, MinMaxInternal(NextStates[i], MAX_DEPTH-1, false, OriginTurn));
         if(temp>value){
             value = temp;
             BestState = NextStates[i];
@@ -48,9 +48,9 @@ pair<GameState,float> MinMax(GameState state){
 }
 
 
-float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha, float beta){
+float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha, float beta, char OriginTurn){
     if((depth==0) || (state.GameEnded())){
-        return state.EvaluateHeuristic();
+        return state.EvaluateHeuristic(OriginTurn);
     }
     else{
         float value;
@@ -59,7 +59,7 @@ float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha
         if(maximizing){
             value = numeric_limits<float>::min();
             for(i=0;i<NextStates.size();i++){
-                value = max(value, AlphaBetaInternal(NextStates[i], depth-1, false, alpha, beta));
+                value = max(value, AlphaBetaInternal(NextStates[i], depth-1, false, alpha, beta, OriginTurn));
                 alpha = max(alpha, value);
                 if(alpha >= beta){
                     break;
@@ -70,7 +70,7 @@ float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha
         else{
             value = numeric_limits<float>::max();
             for(i=0;i<NextStates.size();i++){
-                value = min(value, AlphaBetaInternal(NextStates[i], depth-1, true, alpha, beta));
+                value = min(value, AlphaBetaInternal(NextStates[i], depth-1, true, alpha, beta, OriginTurn));
                 beta = min(beta,value);
                 if(alpha >= beta){
                     break;
@@ -81,14 +81,14 @@ float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha
     }
 }
 
-pair<GameState,float> AlphaBeta(GameState state){
+pair<GameState,float> AlphaBeta(GameState state, char OriginTurn){
     float value, temp;
     vector<GameState> NextStates = state.GetValidMoves();
     int i=0;
     GameState BestState;
     value = numeric_limits<float>::min();
     for(i=0;i<NextStates.size();i++){
-        temp = max(value, AlphaBetaInternal(NextStates[i], MAX_DEPTH-1, false, numeric_limits<float>::min(), numeric_limits<float>::max()));
+        temp = max(value, AlphaBetaInternal(NextStates[i], MAX_DEPTH-1, false, numeric_limits<float>::min(), numeric_limits<float>::max(), OriginTurn));
         if(temp>value){
             value = temp;
             BestState = NextStates[i];
@@ -187,7 +187,7 @@ int main(){
         }
         cerr<<endl;
 
-        pair<GameState,float> result = AlphaBeta(CurrentState);
+        pair<GameState,float> result = AlphaBeta(CurrentState, turn);
         GameState NewState = result.first;
         stringstream MoveOut;
 

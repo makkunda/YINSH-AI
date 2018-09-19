@@ -452,7 +452,7 @@ class GameState {
                 return false;
             }
         }
-        float EvaluateHeuristic(){
+        float EvaluateHeuristic(char OriginTurn){
             float score = 0;
             int i,j;
             int bPegs=0,bRings=0,oPegs=0,oRings=0;
@@ -473,9 +473,13 @@ class GameState {
                     else{}
                 }
             }
-            score += (bPegs - oPegs);
+            score += 3*(bPegs - oPegs);
             score += 0.5*(bRings - oRings);
-            score += 20*(RingsRemoved[0] - RingsRemoved[1]);
+            score += 25*(RingsRemoved[0] - RingsRemoved[1]);
+            if(OriginTurn=='o'){
+                score = -score;
+            }
+            return score;
         }
 
         vector<pair<int,int> > vertical_up(int x,int y)
