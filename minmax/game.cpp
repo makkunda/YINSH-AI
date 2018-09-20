@@ -448,24 +448,24 @@ vector<GameState> cleaner_in(GameState s)
         {
             for(j=0;j<ringpos.size();j++)
             {
-                GameState temp(&s);
-                temp.LastMove->beg_remr.push_back(ringpos[j]);
-                temp.LastMove->beg_rem_first.push_back(line_pos[i].first);
-                temp.LastMove->beg_rem_last.push_back(line_pos[i].second);
+                GameState *temp = new GameState(&s);
+                temp->LastMove->beg_remr.push_back(ringpos[j]);
+                temp->LastMove->beg_rem_first.push_back(line_pos[i].first);
+                temp->LastMove->beg_rem_last.push_back(line_pos[i].second);
 
-                vector<pair<int,int> > rempos = getline_ours_gen(line_pos[i].first,line_pos[i].second,&temp);
+                vector<pair<int,int> > rempos = getline_ours_gen(line_pos[i].first,line_pos[i].second,temp);
 
-                temp.board[ringpos[j].first][ringpos[j].second] = 'e';
+                temp->board[ringpos[j].first][ringpos[j].second] = 'e';
 
                 for(k=0;k<rempos.size();k++)
                 {
-                    temp.board[rempos[k].first][rempos[k].second] = 'e';
+                    temp->board[rempos[k].first][rempos[k].second] = 'e';
                 }
 
-                if(temp.turn=='b')
-                    temp.RingsRemoved[0]+=1;
+                if(temp->turn=='b')
+                    temp->RingsRemoved[0]+=1;
                 else
-                    temp.RingsRemoved[1]+=1;
+                    temp->RingsRemoved[1]+=1;
 
                 vector<GameState> recurse = cleaner_in(temp);
 
@@ -514,23 +514,23 @@ vector<GameState> cleaner_out(GameState s)
         {
             for(j=0;j<ringpos.size();j++)
             {
-                GameState temp(&s);
-                temp.LastMove->end_remr.push_back(ringpos[j]);
-                temp.LastMove->end_rem_first.push_back(line_pos[i].first);
-                temp.LastMove->end_rem_last.push_back(line_pos[i].second);
+                GameState *temp = new GameState(&s);
+                temp->LastMove->end_remr.push_back(ringpos[j]);
+                temp->LastMove->end_rem_first.push_back(line_pos[i].first);
+                temp->LastMove->end_rem_last.push_back(line_pos[i].second);
 
-                vector<pair<int,int> > rempos = getline_ours_gen(line_pos[i].first,line_pos[i].second,&temp);
+                vector<pair<int,int> > rempos = getline_ours_gen(line_pos[i].first,line_pos[i].second,temp);
 
-                temp.board[ringpos[j].first][ringpos[j].second] = 'e';
+                temp->board[ringpos[j].first][ringpos[j].second] = 'e';
 
                 for(k=0;k<rempos.size();k++)
                 {
-                    temp.board[rempos[k].first][rempos[k].second] = 'e';
+                    temp->board[rempos[k].first][rempos[k].second] = 'e';
                 }
-                if(temp.turn=='b')
-                    temp.RingsRemoved[0]+=1;
+                if(temp->turn=='b')
+                    temp->RingsRemoved[0]+=1;
                 else
-                    temp.RingsRemoved[1]+=1;
+                    temp->RingsRemoved[1]+=1;
                 vector<GameState> recurse = cleaner_out(temp);
 
                 for(k=0;k<recurse.size();k++)
