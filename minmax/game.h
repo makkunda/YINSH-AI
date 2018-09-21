@@ -384,32 +384,61 @@ class Move{
     vector<pair<int,int> > end_remr;
     vector<pair<int,int> > end_rem_first;
     vector<pair<int,int> > end_rem_last;
-    Move(char mv,pair<int,int> init_in,pair<int,int> finl_in)
-    {
-        movecolour = mv;
-        init = make_pair(init_in.first,init_in.second);
-        finl = make_pair(finl_in.first,finl_in.second);
+    Move(){
+        movecolour = '0';
+        init = make_pair(-1,-1);
+        finl = make_pair(-1,-1);
         beg_remr = vector<pair<int,int> > ();
         beg_rem_first = vector<pair<int,int> > ();
         beg_rem_last = vector<pair<int,int> > ();
         end_remr = vector<pair<int,int> > ();
         end_rem_first = vector<pair<int,int> > ();
         end_rem_last = vector<pair<int,int> > ();
+
     }
-    Move(Move* oth){
-        movecolour = oth->movecolour;
-        init = make_pair(oth->init.first,oth->init.second);
-        finl = make_pair(oth->finl.first,oth->finl.second);
+    // Move(char mv,pair<int,int> init_in,pair<int,int> finl_in)
+    // {
+    //     movecolour = mv;
+    //     init = make_pair(init_in.first,init_in.second);
+    //     finl = make_pair(finl_in.first,finl_in.second);
+    //     beg_remr = vector<pair<int,int> > ();
+    //     beg_rem_first = vector<pair<int,int> > ();
+    //     beg_rem_last = vector<pair<int,int> > ();
+    //     end_remr = vector<pair<int,int> > ();
+    //     end_rem_first = vector<pair<int,int> > ();
+    //     end_rem_last = vector<pair<int,int> > ();
+    // }
+    Move(const Move &oth){
+        movecolour = oth.movecolour;
+        init = make_pair(oth.init.first,oth.init.second);
+        finl = make_pair(oth.finl.first,oth.finl.second);
         // remr = make_pair(oth->remr.first,oth->remr.second);
         // reml_first = make_pair(oth->reml_first.first,oth->reml_first.second);
         // reml_last = make_pair(oth->reml_last.first,oth->reml_last.second);
-        beg_remr = oth->beg_remr;
-        beg_rem_first = oth->beg_rem_first;
-        beg_rem_last = oth->beg_rem_last;
-        end_remr = oth->end_remr;
-        end_rem_first = oth->end_rem_first;
-        end_rem_last = oth->end_rem_last;
+        beg_remr = oth.beg_remr;
+        beg_rem_first = oth.beg_rem_first;
+        beg_rem_last = oth.beg_rem_last;
+        end_remr = oth.end_remr;
+        end_rem_first = oth.end_rem_first;
+        end_rem_last = oth.end_rem_last;
     }
+    Move(const Move* oth){
+        if(oth!=NULL){
+            movecolour = oth->movecolour;
+            init = make_pair(oth->init.first,oth->init.second);
+            finl = make_pair(oth->finl.first,oth->finl.second);
+            // remr = make_pair(oth->remr.first,oth->remr.second);
+            // reml_first = make_pair(oth->reml_first.first,oth->reml_first.second);
+            // reml_last = make_pair(oth->reml_last.first,oth->reml_last.second);
+            beg_remr = oth->beg_remr;
+            beg_rem_first = oth->beg_rem_first;
+            beg_rem_last = oth->beg_rem_last;
+            end_remr = oth->end_remr;
+            end_rem_first = oth->end_rem_first;
+            end_rem_last = oth->end_rem_last;
+        }
+    }
+
 };
 
 class GameState {
@@ -421,11 +450,15 @@ class GameState {
                                     // empty is e 
         char turn; // 'b' and  'o'
         vector<int> RingsRemoved; // rings by blue is zeroth element and rings by orange is first
-        Move*  LastMove;//move which led to this state;
+        Move LastMove;//move which led to this state;
         int BoardSize;
         MoveTables* table;
-        GameState(){
-        }
+        // ~GameState(){
+        //     if(LastMove!=NULL){
+        //         delete(LastMove);
+        //     }
+        // }
+        GameState(){}
         GameState(int BoardSizeIn, char OurTurn, MoveTables* ourtable){
             board = vector<vector<char> > ();
             int i = 0, j = 0;
@@ -445,7 +478,34 @@ class GameState {
             RingsRemoved = vector<int>(2,0);
         }
 
-        GameState(GameState* oth){
+        GameState(const GameState &oth){
+            board = vector<vector<char> > ();
+            int i = 0, j = 0;
+            BoardSize = oth.BoardSize; // num hexagons
+            board.push_back(vector<char>(1,oth.board[0][0]));
+            for(i=1;i<=BoardSize;i++){
+                vector<char> temp;
+                for(j=0;j<6*i;j++){
+                    temp.push_back(oth.board[i][j]);
+                }
+                board.push_back(temp);
+            }
+            // if(!(oth.LastMove==NULL)){
+            //     LastMove = new Move(oth.LastMove);
+            // }
+            // else{
+            //     LastMove = NULL;
+            // }
+            LastMove = Move(&oth.LastMove);
+            // deal with the six banned squares here?
+            
+            turn = oth.turn;
+            RingsRemoved = vector<int>(2,0);
+            RingsRemoved[0] = oth.RingsRemoved[0];
+            RingsRemoved[1] = oth.RingsRemoved[1];
+            table = oth.table;
+        }
+        GameState(const GameState *oth){
             board = vector<vector<char> > ();
             int i = 0, j = 0;
             BoardSize = oth->BoardSize; // num hexagons
@@ -456,14 +516,14 @@ class GameState {
                     temp.push_back(oth->board[i][j]);
                 }
                 board.push_back(temp);
-                if(!(oth->LastMove==NULL)){
-                    LastMove = new Move(oth->LastMove);
-                }
-                else{
-                    LastMove = NULL;
-                }
             }
-            
+            // if(!(oth->LastMove==NULL)){
+            //     LastMove = new Move(oth->LastMove);
+            // }
+            // else{
+            //     LastMove = NULL;
+            // }
+            LastMove = Move(&(oth->LastMove));
             // deal with the six banned squares here?
             
             turn = oth->turn;
@@ -558,10 +618,14 @@ class GameState {
                         combo_pegs_len++;
                         if(combo_pegs_len>1){
                             if(combo_pegs_color=='g'){
-                                bCombo[combo_pegs_len]++;
+                                if(combo_pegs_len<=5){
+                                    bCombo[combo_pegs_len]++;
+                                }
                             }
                             else if(combo_pegs_color=='p'){
-                                oCombo[combo_pegs_len]++;
+                                if(combo_pegs_len<=5){
+                                    oCombo[combo_pegs_len]++;
+                                }
                             }
                         }
                     }
@@ -596,10 +660,14 @@ class GameState {
                         combo_pegs_len++;
                         if(combo_pegs_len>1){
                             if(combo_pegs_color=='g'){
-                                bCombo[combo_pegs_len]++;
+                                if(combo_pegs_len<=5){
+                                    bCombo[combo_pegs_len]++;
+                                }
                             }
                             else if(combo_pegs_color=='p'){
-                                oCombo[combo_pegs_len]++;
+                                if(combo_pegs_len<=5){
+                                    oCombo[combo_pegs_len]++;
+                                }
                             }
                         }
                     }
@@ -634,10 +702,14 @@ class GameState {
                         combo_pegs_len++;
                         if(combo_pegs_len>1){
                             if(combo_pegs_color=='g'){
-                                bCombo[combo_pegs_len]++;
+                                if(combo_pegs_len<=5){
+                                    bCombo[combo_pegs_len]++;
+                                }
                             }
                             else if(combo_pegs_color=='p'){
-                                oCombo[combo_pegs_len]++;
+                                if(combo_pegs_len<=5){
+                                    oCombo[combo_pegs_len]++;
+                                }
                             }
                         }
                     }
@@ -727,8 +799,8 @@ class GameState {
         
 
 
-        vector<GameState> GetValidMoves(){
-            vector<GameState> res;
+        void GetValidMoves(vector<GameState> &topush){
+            // vector<GameState> res;
             int i,j,k;
             char opp;
             char mytok,opptok;
@@ -787,35 +859,35 @@ class GameState {
                         }
                         else
                         {
-                            GameState temp = new GameState(this);     
+                            GameState* temp = new GameState(*this);     
                             // if(turn=='b')
                             //     temp.turn ='o';
                             // else
                             //     temp.turn ='b';
-                            temp.board[xi][yi] = turn;
-                            temp.board[x][y] = mytok;
-                            temp.LastMove = new Move(turn,make_pair(x,y),make_pair(xi,yi));
+                            temp->board[xi][yi] = turn;
+                            temp->board[x][y] = mytok;
+                            temp->LastMove.init = make_pair(x,y);
+                            temp->LastMove.finl = make_pair(xi,yi);
+                            // temp->LastMove = Move(turn,make_pair(x,y),make_pair(xi,yi));
                             int kp;
                             for(kp=1;kp<k;kp++)
                             {
                                 int xk,yk;
                                 xk=pos[j][kp].first;
                                 yk=pos[j][kp].second;
-                                if(temp.board[xk][yk]==mytok)
-                                    temp.board[xk][yk]=opptok;
-                                else if(temp.board[xk][yk]==opptok)
-                                    temp.board[xk][yk]=mytok;
+                                if(temp->board[xk][yk]==mytok)
+                                    temp->board[xk][yk]=opptok;
+                                else if(temp->board[xk][yk]==opptok)
+                                    temp->board[xk][yk]=mytok;
                             }
-                            res.push_back(temp);
+                            topush.push_back(*temp);
                             if(vismark)
                                 break;
                         }
-                        
-                        
                     }
                 }
             }
-            return res;
+            // return res;
         }
 };
 
@@ -823,4 +895,4 @@ class GameState {
 size_t split_ours(const string &txt, vector<string> &strs, char ch);
 vector<pair<int,int> > getline_ours(pair<int,int> st,pair<int,int> end,GameState* S);
 void ExecuteMove(GameState* S,string s);
-vector<GameState> FinalGetValidMoves(GameState s);
+void FinalGetValidMoves(GameState s, vector<GameState> &topush);

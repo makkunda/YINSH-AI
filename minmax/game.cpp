@@ -413,9 +413,9 @@ vector<pair<pair<int,int>,pair<int,int> > > get_comp(GameState S,char tok)
    return res; 
 }  
 
-vector<GameState> cleaner_in(GameState s)
+void cleaner_in(GameState s, vector<GameState> &topush)
 {
-    vector<GameState> res;
+    // vector<GameState> res;
     char mytok;
     if (s.turn=='b')
         mytok = 'g';
@@ -425,7 +425,7 @@ vector<GameState> cleaner_in(GameState s)
     vector<pair<pair<int,int>,pair<int,int> > > line_pos;
     line_pos = get_comp(s,mytok);
     if(line_pos.size()==0)
-        res.push_back(s);
+        topush.push_back(s);
     else
     {
         int i,j,k;
@@ -449,9 +449,9 @@ vector<GameState> cleaner_in(GameState s)
             for(j=0;j<ringpos.size();j++)
             {
                 GameState *temp = new GameState(&s);
-                temp->LastMove->beg_remr.push_back(ringpos[j]);
-                temp->LastMove->beg_rem_first.push_back(line_pos[i].first);
-                temp->LastMove->beg_rem_last.push_back(line_pos[i].second);
+                temp->LastMove.beg_remr.push_back(ringpos[j]);
+                temp->LastMove.beg_rem_first.push_back(line_pos[i].first);
+                temp->LastMove.beg_rem_last.push_back(line_pos[i].second);
 
                 vector<pair<int,int> > rempos = getline_ours_gen(line_pos[i].first,line_pos[i].second,temp);
 
@@ -467,21 +467,21 @@ vector<GameState> cleaner_in(GameState s)
                 else
                     temp->RingsRemoved[1]+=1;
 
-                vector<GameState> recurse = cleaner_in(temp);
+                cleaner_in(*temp,topush);
 
-                for(k=0;k<recurse.size();k++)
-                    res.push_back(recurse[k]);
+                // for(k=0;k<recurse.size();k++)
+                //     res.push_back(recurse[k]);
 
             }
         }
 
     }
-    return res;
+    // return res;
 }
 
-vector<GameState> cleaner_out(GameState s)
+void cleaner_out(GameState s, vector<GameState> &topush)
 {
-    vector<GameState> res;
+    // vector<GameState> res;
     char mytok;
     if (s.turn=='b')
         mytok = 'g';
@@ -491,7 +491,7 @@ vector<GameState> cleaner_out(GameState s)
     vector<pair<pair<int,int>,pair<int,int> > > line_pos;
     line_pos = get_comp(s,mytok);
     if(line_pos.size()==0)
-        res.push_back(s);
+        topush.push_back(s);
     else
     {
         int i,j,k;
@@ -515,9 +515,9 @@ vector<GameState> cleaner_out(GameState s)
             for(j=0;j<ringpos.size();j++)
             {
                 GameState *temp = new GameState(&s);
-                temp->LastMove->end_remr.push_back(ringpos[j]);
-                temp->LastMove->end_rem_first.push_back(line_pos[i].first);
-                temp->LastMove->end_rem_last.push_back(line_pos[i].second);
+                temp->LastMove.end_remr.push_back(ringpos[j]);
+                temp->LastMove.end_rem_first.push_back(line_pos[i].first);
+                temp->LastMove.end_rem_last.push_back(line_pos[i].second);
 
                 vector<pair<int,int> > rempos = getline_ours_gen(line_pos[i].first,line_pos[i].second,temp);
 
@@ -531,33 +531,35 @@ vector<GameState> cleaner_out(GameState s)
                     temp->RingsRemoved[0]+=1;
                 else
                     temp->RingsRemoved[1]+=1;
-                vector<GameState> recurse = cleaner_out(temp);
+                cleaner_out(*temp, topush);
 
-                for(k=0;k<recurse.size();k++)
-                    res.push_back(recurse[k]);
+                // for(k=0;k<recurse.size();k++)
+                //     topush.push_back(recurse[k]);
 
             }
         }
 
     }
-    return res;
+    // return res;
 }
 
-vector<GameState> FinalGetValidMoves(GameState s){
-    s.LastMove = new Move('a',make_pair(-1,-1), make_pair(-1,-1));
-    vector<GameState> FirstCleaned = cleaner_in(s);
+void FinalGetValidMoves(GameState s, vector<GameState> &topush){
+    // s.LastMove = new Move('a',make_pair(-1,-1), make_pair(-1,-1));
+    s.LastMove = Move();
+    vector<GameState> FirstCleaned;
+    cleaner_in(s, FirstCleaned);
     vector<GameState> Middle;
     int i;
     for(i=0;i<FirstCleaned.size();i++){
-        vector<GameState> MiddleValid = FirstCleaned[i].GetValidMoves();
-        Middle.reserve(Middle.size()+ MiddleValid.size());
-        Middle.insert(Middle.end(),MiddleValid.begin(),MiddleValid.end());
+        FirstCleaned[i].GetValidMoves(Middle);
+        // Middle.reserve(Middle.size()+ MiddleValid.size());
+        // Middle.insert(Middle.end(),MiddleValid.begin(),MiddleValid.end());
     }
     vector<GameState> Output;
     for(i=0;i<Middle.size();i++){
-        vector<GameState> OutputValid = cleaner_out(Middle[i]);
-        Output.reserve(Output.size()+ OutputValid.size());
-        Output.insert(Output.end(),OutputValid.begin(),OutputValid.end());
+        cleaner_out(Middle[i],Output);
+        // Output.reserve(Output.size()+ OutputValid.size());
+        // Output.insert(Output.end(),OutputValid.begin(),OutputValid.end());
     }
     for(i=0;i<Output.size();i++){
         if(Output[i].turn=='b')
@@ -565,5 +567,13 @@ vector<GameState> FinalGetValidMoves(GameState s){
         else
             Output[i].turn ='b';
     }
-    return Output;
+    for(i=0;i<Output.size();i++){
+        topush.push_back(Output[i]);
+        // if(Output[i].turn=='b')
+        //     Output[i].turn ='o';
+        // else
+        //     Output[i].turn ='b';
+    }
+
+    // return Output;
 }
