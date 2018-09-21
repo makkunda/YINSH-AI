@@ -5,6 +5,9 @@
 #include <sstream>
 #include <iostream>
 #include <limits>
+#include <algorithm>
+#include <ctime>
+
 using namespace std;
 
 template <>
@@ -881,6 +884,7 @@ class GameState {
                                     temp->board[xk][yk]=mytok;
                             }
                             topush.push_back(*temp);
+                            delete(temp); // destroy this since above we copy by value
                             if(vismark)
                                 break;
                         }

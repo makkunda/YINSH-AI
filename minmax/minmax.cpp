@@ -1,5 +1,5 @@
 #include "game.h"
-
+#include <algorithm>
 // const int MAX_DEPTH = 4;
 const float MY_FLOAT_MAX =  numeric_limits<float>::max();
 const float MY_FLOAT_MIN =  -numeric_limits<float>::max();
@@ -60,11 +60,26 @@ float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha
         float value;
         vector<GameState> NextStates;
         FinalGetValidMoves(state, NextStates);
+        vector<pair<float,int> > to_sort;
         int i=0;
+        for(i=0;i<NextStates.size();i++)
+        {
+            float heur = NextStates[i].EvaluateHeuristicAdvanced(OriginTurn);
+            to_sort.push_back(make_pair(heur,i));
+        }
+        sort(to_sort.begin(),to_sort.end());
+        vector<int> move_order;
+        move_order.resize(to_sort.size());
+        int j = 0;
+        for(int i=to_sort.size();i>0;i--)
+        {
+            move_order[j] = to_sort[i-1].second;
+            j++;
+        }
         if(maximizing){
             value = MY_FLOAT_MIN;
             for(i=0;i<NextStates.size();i++){
-                value = max(value, AlphaBetaInternal(NextStates[i], depth-1, false, alpha, beta, OriginTurn));
+                value = max(value, AlphaBetaInternal(NextStates[move_order[i]], depth-1, false, alpha, beta, OriginTurn));
                 alpha = max(alpha, value);
                 if(alpha >= beta){
                     break;
@@ -72,9 +87,10 @@ float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha
             }
         }
         else{
+            reverse(move_order.begin(),move_order.end());
             value = MY_FLOAT_MAX;
             for(i=0;i<NextStates.size();i++){
-                value = min(value, AlphaBetaInternal(NextStates[i], depth-1, true, alpha, beta, OriginTurn));
+                value = min(value, AlphaBetaInternal(NextStates[move_order[i]], depth-1, true, alpha, beta, OriginTurn));
                 beta = min(beta,value);
                 if(alpha >= beta){
                     break;
@@ -90,14 +106,37 @@ pair<GameState,float> AlphaBeta(GameState state, char OriginTurn, int MAX_DEPTH)
     float value, temp;
     vector<GameState> NextStates;
     FinalGetValidMoves(state, NextStates);
+    vector<pair<float,int> > to_sort;
     int i=0;
+    for(i=0;i<NextStates.size();i++)
+        {
+            float heur = NextStates[i].EvaluateHeuristicAdvanced(OriginTurn);
+            to_sort.push_back(make_pair(heur,i));
+        }
+    sort(to_sort.begin(),to_sort.end());
+    vector<int> move_order;
+    move_order.resize(to_sort.size());
+    int j = 0;
+    for(int i=to_sort.size();i>0;i--)
+    {
+        move_order[j] = to_sort[i-1].second;
+        j++;
+    }
     GameState BestState;
     value = MY_FLOAT_MIN;
+    float alpha = MY_FLOAT_MIN;
+    float beta = MY_FLOAT_MAX;
     for(i=0;i<NextStates.size();i++){
-        temp = max(value, AlphaBetaInternal(NextStates[i], MAX_DEPTH-1, false, MY_FLOAT_MIN, MY_FLOAT_MAX, OriginTurn));
+        temp = max(value, AlphaBetaInternal(NextStates[move_order[i]], MAX_DEPTH-1, false, alpha, beta, OriginTurn));
+        alpha = max(alpha, temp);
+        if(alpha >= beta){
+            cout<<"BIG"<<endl;
+            exit(-1);
+            break;
+        }
         if(temp>value){
             value = temp;
-            BestState = NextStates[i];
+            BestState = NextStates[move_order[i]];
         }
     }
     NextStates.clear();
@@ -105,7 +144,7 @@ pair<GameState,float> AlphaBeta(GameState state, char OriginTurn, int MAX_DEPTH)
 }
 
 int main(){
-    int player, BoardSize, time_given;
+    int player, BoardSize, TIME_GIVEN;
     srand(time(0));
     // srand(6334);
 
@@ -115,7 +154,7 @@ int main(){
     split_ours(recv.c_str(),vv,' ');
     player = atoi(vv[0].c_str());
     BoardSize = atoi(vv[1].c_str());
-    time_given = atoi(vv[2].c_str());
+    TIME_GIVEN = atoi(vv[2].c_str());
     // cin>>player;
     player-=1; // to make it zero or one
     // cin>>BoardSize;
@@ -127,6 +166,9 @@ int main(){
     else{
         turn = 'o';
     }
+
+    double elapsed_seconds = 0;
+
     MoveTables*  FullTable;
     FullTable = new MoveTables(BoardSize);
     GameState CurrentState(BoardSize, 'b', FullTable);
@@ -218,6 +260,7 @@ int main(){
     }
     // pair<GameState,float> result;
     int num_moves_we_played = 1;
+    bool fixed_depth = false;
     while(true){
         // play own move
         // cerr<<endl;
@@ -232,11 +275,20 @@ int main(){
         //     cerr<<endl;
         // }
         // cerr<<endl;
-
+        time_t start = time(0);
         pair<GameState,float> result = AlphaBeta(CurrentState, turn, MAX_DEPTH);
+        elapsed_seconds += difftime( time(0), start);
+        if(elapsed_seconds>TIME_GIVEN-20){
+            MAX_DEPTH = 3;
+            fixed_depth = true;
+        }
+
         num_moves_we_played++;
         if(num_moves_we_played%10==0){
-            MAX_DEPTH++;
+            if(!fixed_depth){
+                MAX_DEPTH++;
+            }
+            // cerr<<"****************Depth is now "<<MAX_DEPTH<<endl;
         }
         GameState NewState = result.first;
         stringstream MoveOut;
@@ -260,6 +312,11 @@ int main(){
         //execute opponent move
         getline(cin, recv);
         ExecuteMove(&CurrentState, recv);
+        // if(num_moves_we_played==4){
+        //     // int k = 4/0;
+        //     break;
+        // }
     }
+    delete(FullTable);
     return 0;
 }
