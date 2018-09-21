@@ -284,7 +284,7 @@ int main(){
         }
 
         num_moves_we_played++;
-        if(num_moves_we_played%10==0){
+        if(num_moves_we_played%9==0){
             if(!fixed_depth){
                 MAX_DEPTH++;
             }

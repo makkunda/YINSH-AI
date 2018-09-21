@@ -15,7 +15,7 @@ struct std::hash<pair<int, int> > {
 public:
         size_t operator()(pair<int, int> x) const throw() {
             //  size_t h = hash<int>()(x.first) ^ hash<int>()(x.second);//something with x   
-            size_t h = (10+x.first)*101 + x.second;
+            size_t h = (17+x.first)*103 + x.second;
              return h;
         }
 };
@@ -737,7 +737,7 @@ class GameState {
             score += 2*(bCombo[2]-oCombo[2]);
             score += 4*(bCombo[3]-oCombo[3]);            
             score += 8*(bCombo[4]-oCombo[4]);
-            // score += 0.5*(bRings - oRings);
+            score += 5*(bThwart - oThwart);
             score += 350*(RingsRemoved[0] - RingsRemoved[1]);
             if(OriginTurn=='o'){
                 score = -score;
