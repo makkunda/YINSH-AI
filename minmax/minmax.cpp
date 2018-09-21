@@ -292,22 +292,43 @@ int main(){
         }
         GameState NewState = result.first;
         stringstream MoveOut;
-        // int flag_initial = false;
+        int cur_ring;
+        if(turn=='b')
+            cur_ring = CurrentState.RingsRemoved[0];
+        else
+            cur_ring = CurrentState.RingsRemoved[1];
+        int all_done = false;
         for(i=0;i<NewState.LastMove.beg_remr.size();i++){
+            if(cur_ring>=3)
+            {
+                all_done = true;
+                MoveOut <<"\n";
+                cout<<MoveOut.str();
+                break;
+            }
+            cur_ring ++;
             MoveOut << "RS " << NewState.LastMove.beg_rem_first[i].first<<" "<<NewState.LastMove.beg_rem_first[i].second;
             MoveOut << " RE " << NewState.LastMove.beg_rem_last[i].first<<" "<<NewState.LastMove.beg_rem_last[i].second;
             MoveOut << " X " << NewState.LastMove.beg_remr[i].first<<" "<<NewState.LastMove.beg_remr[i].second<<" ";
         }
+        if(all_done)
+            break;
         MoveOut << "S " << NewState.LastMove.init.first<<" "<<NewState.LastMove.init.second;
         MoveOut << " M " << NewState.LastMove.finl.first<<" "<<NewState.LastMove.finl.second;
         for(i=0;i<NewState.LastMove.end_remr.size();i++){
+            if(cur_ring>=3)
+            {
+                all_done = true;
+                break;
+            }
             MoveOut << " RS " << NewState.LastMove.end_rem_first[i].first<<" "<<NewState.LastMove.end_rem_first[i].second;
             MoveOut << " RE " << NewState.LastMove.end_rem_last[i].first<<" "<<NewState.LastMove.end_rem_last[i].second;
             MoveOut << " X " << NewState.LastMove.end_remr[i].first<<" "<<NewState.LastMove.end_remr[i].second;
         }
         MoveOut <<"\n";
         cout<<MoveOut.str();
-
+        if(all_done)
+            break;
         CurrentState = NewState;
         //execute opponent move
         getline(cin, recv);
