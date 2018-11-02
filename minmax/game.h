@@ -1,3 +1,7 @@
+#ifndef CLASS_H
+#define CLASS_H
+
+
 #include <vector>
 #include <unordered_map>
 #include <map>
@@ -379,6 +383,7 @@ class MoveTables{
 class Move{
     public:
     char movecolour;
+    pair<int,int> RingPlaced;
     pair<int,int> init;
     pair<int,int> finl;
     vector<pair<int,int> > beg_remr;
@@ -391,6 +396,7 @@ class Move{
         movecolour = '0';
         init = make_pair(-1,-1);
         finl = make_pair(-1,-1);
+        RingPlaced = make_pair(-1,-1);
         beg_remr = vector<pair<int,int> > ();
         beg_rem_first = vector<pair<int,int> > ();
         beg_rem_last = vector<pair<int,int> > ();
@@ -415,6 +421,7 @@ class Move{
         movecolour = oth.movecolour;
         init = make_pair(oth.init.first,oth.init.second);
         finl = make_pair(oth.finl.first,oth.finl.second);
+        RingPlaced = make_pair(oth.RingPlaced.first,oth.RingPlaced.second);
         // remr = make_pair(oth->remr.first,oth->remr.second);
         // reml_first = make_pair(oth->reml_first.first,oth->reml_first.second);
         // reml_last = make_pair(oth->reml_last.first,oth->reml_last.second);
@@ -430,6 +437,7 @@ class Move{
             movecolour = oth->movecolour;
             init = make_pair(oth->init.first,oth->init.second);
             finl = make_pair(oth->finl.first,oth->finl.second);
+            RingPlaced = make_pair(oth->RingPlaced.first,oth->RingPlaced.second);
             // remr = make_pair(oth->remr.first,oth->remr.second);
             // reml_first = make_pair(oth->reml_first.first,oth->reml_first.second);
             // reml_last = make_pair(oth->reml_last.first,oth->reml_last.second);
@@ -900,3 +908,7 @@ size_t split_ours(const string &txt, vector<string> &strs, char ch);
 vector<pair<int,int> > getline_ours(pair<int,int> st,pair<int,int> end,GameState* S);
 void ExecuteMove(GameState* S,string s);
 void FinalGetValidMoves(GameState s, vector<GameState> &topush);
+GameState AlphaBetaPlayer(GameState state, char OriginTurn, int MAX_DEPTH);
+GameState RandomPlayer(GameState state, char OriginTurn);
+
+#endif

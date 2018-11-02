@@ -60,6 +60,7 @@ float AlphaBetaInternal(GameState state, int depth, bool maximizing, float alpha
         float value;
         vector<GameState> NextStates;
         FinalGetValidMoves(state, NextStates);
+		random_shuffle(NextStates.begin(), NextStates.end());
         vector<pair<float,int> > to_sort;
         int i=0;
         for(i=0;i<NextStates.size();i++)
@@ -106,6 +107,7 @@ pair<GameState,float> AlphaBeta(GameState state, char OriginTurn, int MAX_DEPTH)
     float value, temp;
     vector<GameState> NextStates;
     FinalGetValidMoves(state, NextStates);
+    random_shuffle(NextStates.begin(), NextStates.end());
     vector<pair<float,int> > to_sort;
     int i=0;
     for(i=0;i<NextStates.size();i++)
@@ -129,10 +131,10 @@ pair<GameState,float> AlphaBeta(GameState state, char OriginTurn, int MAX_DEPTH)
     for(i=0;i<NextStates.size();i++){
         temp = max(value, AlphaBetaInternal(NextStates[move_order[i]], MAX_DEPTH-1, false, alpha, beta, OriginTurn));
         alpha = max(alpha, temp);
-        if(alpha >= beta){
+        if(alpha > beta){
             cout<<"BIG"<<endl;
             exit(-1);
-            break;
+            // break;
         }
         if(temp>value){
             value = temp;
@@ -143,7 +145,21 @@ pair<GameState,float> AlphaBeta(GameState state, char OriginTurn, int MAX_DEPTH)
     return make_pair(BestState,value);
 }
 
-int main(){
+GameState AlphaBetaPlayer(GameState state, char OriginTurn, int MAX_DEPTH){
+	return AlphaBeta(state, OriginTurn, MAX_DEPTH).first;
+}
+
+GameState RandomPlayer(GameState state, char OriginTurn){
+    vector<GameState> NextStates;
+    FinalGetValidMoves(state, NextStates);
+    random_shuffle(NextStates.begin(), NextStates.end());
+    GameState RandomState = NextStates[0];
+    NextStates.clear();
+    return RandomState;
+}
+
+
+int main_submission(){
     int player, BoardSize, TIME_GIVEN;
     srand(time(0));
     // srand(6334);
@@ -276,7 +292,7 @@ int main(){
         // }
         // cerr<<endl;
         time_t start = time(0);
-        pair<GameState,float> result = AlphaBeta(CurrentState, turn, MAX_DEPTH);
+        GameState NewState = AlphaBetaPlayer(CurrentState, turn, MAX_DEPTH);
         elapsed_seconds += difftime( time(0), start);
         if(elapsed_seconds>TIME_GIVEN-20){
             MAX_DEPTH = 3;
@@ -290,7 +306,6 @@ int main(){
             }
             // cerr<<"****************Depth is now "<<MAX_DEPTH<<endl;
         }
-        GameState NewState = result.first;
         stringstream MoveOut;
         int cur_ring;
         if(turn=='b')
@@ -298,6 +313,7 @@ int main(){
         else
             cur_ring = CurrentState.RingsRemoved[1];
         int all_done = false;
+        bool removed_once = false;
         for(i=0;i<NewState.LastMove.beg_remr.size();i++){
             if(cur_ring>=3)
             {
@@ -307,12 +323,19 @@ int main(){
                 break;
             }
             cur_ring ++;
+            if(removed_once){
+                MoveOut<<" ";
+            }
             MoveOut << "RS " << NewState.LastMove.beg_rem_first[i].first<<" "<<NewState.LastMove.beg_rem_first[i].second;
             MoveOut << " RE " << NewState.LastMove.beg_rem_last[i].first<<" "<<NewState.LastMove.beg_rem_last[i].second;
-            MoveOut << " X " << NewState.LastMove.beg_remr[i].first<<" "<<NewState.LastMove.beg_remr[i].second<<" ";
+            MoveOut << " X " << NewState.LastMove.beg_remr[i].first<<" "<<NewState.LastMove.beg_remr[i].second;
+            removed_once = true;
         }
         if(all_done)
             break;
+        if(removed_once){
+            MoveOut<<" ";
+        }
         MoveOut << "S " << NewState.LastMove.init.first<<" "<<NewState.LastMove.init.second;
         MoveOut << " M " << NewState.LastMove.finl.first<<" "<<NewState.LastMove.finl.second;
         for(i=0;i<NewState.LastMove.end_remr.size();i++){

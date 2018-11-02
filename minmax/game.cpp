@@ -468,7 +468,7 @@ void cleaner_in(GameState s, vector<GameState> &topush)
                     temp->RingsRemoved[1]+=1;
 
                 cleaner_in(*temp,topush);
-
+                delete(temp);
                 // for(k=0;k<recurse.size();k++)
                 //     res.push_back(recurse[k]);
 
@@ -532,7 +532,7 @@ void cleaner_out(GameState s, vector<GameState> &topush)
                 else
                     temp->RingsRemoved[1]+=1;
                 cleaner_out(*temp, topush);
-
+                delete(temp);
                 // for(k=0;k<recurse.size();k++)
                 //     topush.push_back(recurse[k]);
 
@@ -543,9 +543,72 @@ void cleaner_out(GameState s, vector<GameState> &topush)
     // return res;
 }
 
+bool GetStartMoves( GameState s, vector<GameState> &topush){
+	int i,j;
+	int oRings=0,bRings=0;
+	if((s.RingsRemoved[0]!=0) || (s.RingsRemoved[1]!=0 )){
+		return false;	
+	}
+	for(i=0;i<s.board.size();i++){
+		for(j=0;j<s.board[i].size();j++){
+			if(s.board[i][j]=='b'){
+				bRings+=1;
+			}
+			else if(s.board[i][j]=='o'){
+				oRings+=1;
+			}
+		}
+	}
+	if((bRings==5) && (oRings==5)){
+		return false;
+	}
+	for(i=0;i<s.board.size();i++){
+		for(j=0;j<s.board[i].size();j++){
+			if(s.board[i][j]=='e'){
+                int x,y;
+                pair<int,int> other_coord = (s.table)->ours_to_axes[make_pair(i,j)];
+                x = other_coord.first;
+                y = other_coord.second;
+
+                if(x==0 && (y==s.BoardSize) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                    continue;
+                if(x==0 && (y==(-1*s.BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                    continue;
+                if(x==(-1*s.BoardSize) && (y==(-1*s.BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                    continue;
+                if(x==(s.BoardSize) && (y==(s.BoardSize)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                    continue;
+                if(x==(-1*s.BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                    continue;
+                if(x==(s.BoardSize) && (y==(0)) )         // 0,bsz  0,-bsz bsz,0 -bsz,0 bsz,bsz -bsz,-bsz
+                    continue;
+
+				GameState another = GameState(s);
+				another.LastMove.RingPlaced = make_pair(i,j);
+				another.LastMove.movecolour = s.turn;
+				another.board[i][j] = s.turn;
+				if(another.turn=='b'){
+					another.turn ='o';
+				}
+				else{
+					another.turn ='b';
+				}
+				topush.push_back(another);
+			}
+			else if((s.board[i][j]!='o')&&(s.board[i][j]!='b')){
+				cout<<"error";
+			}
+		}
+	}
+    return true;
+}
 void FinalGetValidMoves(GameState s, vector<GameState> &topush){
     // s.LastMove = new Move('a',make_pair(-1,-1), make_pair(-1,-1));
     s.LastMove = Move();
+    if(GetStartMoves(s, topush)){
+		return;
+	}   
+    
     vector<GameState> FirstCleaned;
     cleaner_in(s, FirstCleaned);
     vector<GameState> Middle;
@@ -569,11 +632,6 @@ void FinalGetValidMoves(GameState s, vector<GameState> &topush){
     }
     for(i=0;i<Output.size();i++){
         topush.push_back(Output[i]);
-        // if(Output[i].turn=='b')
-        //     Output[i].turn ='o';
-        // else
-        //     Output[i].turn ='b';
     }
-
     // return Output;
 }

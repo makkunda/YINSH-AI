@@ -28,7 +28,7 @@ def create_index_html(size, rings, rows):
 		'rings': rings,
 		'rows': rows
 	}
-	with open(fname, 'w') as f:
+	with open(os.path.join(PATH, fname), 'w') as f:
 		html = render_template('index.html', context)
 		f.write(html)
 
@@ -49,7 +49,7 @@ class Game:
 		if mode != 'GUI':
 			chrome_options.add_argument('headless');
 		self.driver = webdriver.Chrome(chrome_options=chrome_options)
-		abs_path = os.path.abspath('Yinsh.html')
+		abs_path = os.path.abspath( os.path.join(PATH, "Yinsh.html"))
 		self.driver.get("file:" + abs_path)
 		self.driver.set_window_size(width=self.display_size, height=(self.display_size+60))
 
