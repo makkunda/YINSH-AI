@@ -267,44 +267,6 @@ void ExecuteMove(GameState* S,string s)
         S->turn = 'b';
 }
 
-
-vector<GameState> cleaner_in(GameState s)
-{
-    vector<GameState> res;
-    res.push_back(s);
-    return res;
-}
-
-vector<GameState> cleaner_out(GameState s)
-{
-    vector<GameState> res;
-    res.push_back(s);
-    return res;
-}
-
-
-
-vector<GameState> FinalGetValidMoves(GameState s){
-    s.LastMove = new Move('a',make_pair(-1,-1), make_pair(-1,-1));
-    vector<GameState> FirstCleaned = cleaner_in(s);
-    vector<GameState> Middle;
-    int i;
-    for(i=0;i<FirstCleaned.size();i++){
-        vector<GameState> MiddleValid = FirstCleaned[i].GetValidMoves();
-        Middle.reserve(Middle.size()+ MiddleValid.size());
-        Middle.insert(Middle.end(),MiddleValid.begin(),MiddleValid.end());
-    }
-    vector<GameState> Output;
-    for(i=0;i<Middle.size();i++){
-        vector<GameState> OutputValid = cleaner_out(Middle[i]);
-        Output.reserve(Output.size()+ OutputValid.size());
-        Output.insert(Output.end(),OutputValid.begin(),OutputValid.end());
-    }
-    return Output;
-}
-
-<<<<<<< HEAD
-=======
 vector<pair<pair<int,int>,pair<int,int> > > get_comp(GameState S,char tok)
 {
    vector<pair<pair<int,int>,pair<int,int> > > res;
@@ -635,3 +597,4 @@ void FinalGetValidMoves(GameState s, vector<GameState> &topush){
     }
     // return Output;
 }
+
