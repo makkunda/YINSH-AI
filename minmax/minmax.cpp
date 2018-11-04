@@ -304,7 +304,7 @@ int main_submission(){
             if(!fixed_depth){
                 MAX_DEPTH++;
             }
-            // cerr<<"****************Depth is now "<<MAX_DEPTH<<endl;
+            cerr<<"****************Depth is now "<<MAX_DEPTH<<endl;
         }
         stringstream MoveOut;
         int cur_ring;
