@@ -1,4 +1,4 @@
-#include "game.h"
+#include "game_t.h"
 
 size_t split_ours(const string &txt, vector<string> &strs, char ch)
 {

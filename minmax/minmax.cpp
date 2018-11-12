@@ -159,7 +159,7 @@ GameState RandomPlayer(GameState state, char OriginTurn){
 
 
 int main(){
-    int player, BoardSize, TIME_GIVEN,NumRingsToRemoveIn;
+    int player, BoardSize, TIME_GIVEN, NumRingsToRemoveIn;
     srand(time(0));
     // srand(6334);
 
@@ -170,7 +170,7 @@ int main(){
     player = atoi(vv[0].c_str());
     BoardSize = atoi(vv[1].c_str());
     TIME_GIVEN = atoi(vv[2].c_str());
-    NumRingsToRemoveIn = atoi(vv[2].c_str());
+    NumRingsToRemoveIn = atoi(vv[3].c_str());
     // cin>>player;
     player-=1; // to make it zero or one
     // cin>>BoardSize;
@@ -183,7 +183,7 @@ int main(){
         turn = 'o';
     }
 
-    double elapsed_seconds = 0;
+    double elapsed_seconds = 0, move_seconds = 0;
 
     MoveTables*  FullTable;
     FullTable = new MoveTables(BoardSize);
@@ -293,25 +293,36 @@ int main(){
         // cerr<<endl;
         time_t start = time(0);
         GameState NewState = AlphaBetaPlayer(CurrentState, turn, MAX_DEPTH);
-        elapsed_seconds += difftime( time(0), start);
-        if(elapsed_seconds>TIME_GIVEN-25){
+        move_seconds = difftime( time(0), start);
+        elapsed_seconds += move_seconds;
+
+        if((elapsed_seconds>TIME_GIVEN-40) || (move_seconds>=(TIME_GIVEN/4.0)) ){
             MAX_DEPTH = 3;
+            cerr<<"****************Depth is now "<<MAX_DEPTH<<endl;
             fixed_depth = true;
         }
-
+        
         num_moves_we_played++;
-        if(num_moves_we_played%9==0){
+        if(num_moves_we_played==12){
             if(!fixed_depth){
-                MAX_DEPTH++;
-            }
-            cerr<<"****************Depth is now "<<MAX_DEPTH<<endl;
+					MAX_DEPTH++;
+					cerr<<"****************Depth is now "<<MAX_DEPTH<<endl;
+			}
+        }
+        if(num_moves_we_played==26){
+            if(!fixed_depth){
+					MAX_DEPTH++;
+					cerr<<"****************Depth is now "<<MAX_DEPTH<<endl;
+			}
         }
         stringstream MoveOut;
         int cur_ring;
-        if(turn=='b')
+        if(turn=='b'){
             cur_ring = CurrentState.RingsRemoved[0];
-        else
+        }
+        else{
             cur_ring = CurrentState.RingsRemoved[1];
+        }
         int all_done = false;
         bool removed_once = false;
         for(i=0;i<NewState.LastMove.beg_remr.size();i++){
