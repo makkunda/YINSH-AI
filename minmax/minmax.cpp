@@ -294,7 +294,7 @@ int main(){
         time_t start = time(0);
         GameState NewState = AlphaBetaPlayer(CurrentState, turn, MAX_DEPTH);
         elapsed_seconds += difftime( time(0), start);
-        if(elapsed_seconds>TIME_GIVEN-20){
+        if(elapsed_seconds>TIME_GIVEN-25){
             MAX_DEPTH = 3;
             fixed_depth = true;
         }

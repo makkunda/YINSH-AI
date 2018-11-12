@@ -108,11 +108,7 @@ class Client(Communicator):
 			print 'ERROR : FAILED TO SEND DATA TO SERVER'
 			super(Client,self).closeSocket()
 		elif((data['action'] == 'KILLPROC') or (data['action'] == 'FINISH')):
-			try:	
-				time.sleep(30000)
-			except:		
-				super(Client,self).closeSocket()
-			
+			super(Client,self).closeSocket()
 		return success_flag
 
 	
@@ -234,12 +230,13 @@ def game_loop(args):
 	player_id = server_string_list[0]
 	board_size = int(server_string_list[1])
 	game_timer = int(server_string_list[2])
+	seq_length = int(server_string_list[3])
 	client.setGameTimer(game_timer)
 	print '***********************************\n'
 	print '-> You are player ' + str(player_id)
 	print '-> You are alloted a time of ' + str(game_timer) + 's\n'
 	print '***********************************\n'
-	game = Game(board_size, args.mode, game_timer)        
+	game = Game(board_size, seq_length, args.mode, game_timer)        
 
 	client.SendData2Process(server_string) ## Initialize Process
 
@@ -285,7 +282,6 @@ def game_loop(args):
 								' : Player ' +  str(player_id) + ' SCORE : ' + str(game.get_score(player_id, player_id)) +  \
 								' : Player ' +  str(int(player_id)%2+1) + ' SCORE : ' + str(game.get_score(int(player_id)%2+1, player_id))
 			print 'INVALID MOVE ON THIS CLIENT'
-			time.sleep(30000)
 		elif success == 1:
 			message = move
 		elif success == 2:
