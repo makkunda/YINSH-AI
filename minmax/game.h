@@ -11,7 +11,6 @@
 #include <limits>
 #include <algorithm>
 #include <ctime>
-
 using namespace std;
 
 template <>
@@ -463,6 +462,8 @@ class GameState {
         vector<int> RingsRemoved; // rings by blue is zeroth element and rings by orange is first
         Move LastMove;//move which led to this state;
         int BoardSize;
+        int RingsInit;
+        int NumRingsToRemove;
         MoveTables* table;
         // ~GameState(){
         //     if(LastMove!=NULL){
@@ -470,10 +471,12 @@ class GameState {
         //     }
         // }
         GameState(){}
-        GameState(int BoardSizeIn, char OurTurn, MoveTables* ourtable){
+        GameState(int BoardSizeIn,int RingsInitIn,int NumRingsToRemoveIn, char OurTurn, MoveTables* ourtable){
             board = vector<vector<char> > ();
             int i = 0, j = 0;
             BoardSize = BoardSizeIn; // num hexagons
+            RingsInit = RingsInitIn;
+            NumRingsToRemove = NumRingsToRemoveIn;
             board.push_back(vector<char>(1,'e'));
             for(i=1;i<=BoardSize;i++){
                 vector<char> temp;
@@ -493,6 +496,8 @@ class GameState {
             board = vector<vector<char> > ();
             int i = 0, j = 0;
             BoardSize = oth.BoardSize; // num hexagons
+            RingsInit = oth.RingsInit;
+            NumRingsToRemove = oth.NumRingsToRemove;
             board.push_back(vector<char>(1,oth.board[0][0]));
             for(i=1;i<=BoardSize;i++){
                 vector<char> temp;
@@ -520,6 +525,8 @@ class GameState {
             board = vector<vector<char> > ();
             int i = 0, j = 0;
             BoardSize = oth->BoardSize; // num hexagons
+            RingsInit = oth->RingsInit;
+            NumRingsToRemove = oth->NumRingsToRemove;
             board.push_back(vector<char>(1,oth->board[0][0]));
             for(i=1;i<=BoardSize;i++){
                 vector<char> temp;
@@ -552,35 +559,35 @@ class GameState {
                 return false;
             }
         }
-        float EvaluateHeuristic(char OriginTurn){
-            float score = 0;
-            int i,j;
-            int bPegs=0,bRings=0,oPegs=0,oRings=0;
-            for(i=0;i<board.size();i++){
-                for(j=0;j<board[i].size();j++){
-                    if(board[i][j]=='g'){
-                        bPegs+=1;
-                    }
-                    else if(board[i][j]=='p'){
-                        oPegs+=1;
-                    }
-                    else if(board[i][j]=='b'){
-                        bRings+=1;
-                    }
-                    else if(board[i][j]=='o'){
-                        oRings+=1;
-                    }
-                    else{}
-                }
-            }
-            score += 3*(bPegs - oPegs);
-            score += 0.5*(bRings - oRings);
-            score += 25*(RingsRemoved[0] - RingsRemoved[1]);
-            if(OriginTurn=='o'){
-                score = -score;
-            }
-            return score;
-        }
+        // float EvaluateHeuristic(char OriginTurn){
+        //     float score = 0;
+        //     int i,j;
+        //     int bPegs=0,bRings=0,oPegs=0,oRings=0;
+        //     for(i=0;i<board.size();i++){
+        //         for(j=0;j<board[i].size();j++){
+        //             if(board[i][j]=='g'){
+        //                 bPegs+=1;
+        //             }
+        //             else if(board[i][j]=='p'){
+        //                 oPegs+=1;
+        //             }
+        //             else if(board[i][j]=='b'){
+        //                 bRings+=1;
+        //             }
+        //             else if(board[i][j]=='o'){
+        //                 oRings+=1;
+        //             }
+        //             else{}
+        //         }
+        //     }
+        //     score += 3*(bPegs - oPegs);
+        //     score += 0.5*(bRings - oRings);
+        //     score += 25*(RingsRemoved[0] - RingsRemoved[1]);
+        //     if(OriginTurn=='o'){
+        //         score = -score;
+        //     }
+        //     return score;
+        // }
         float EvaluateHeuristicAdvanced(char OriginTurn){
             float score = 0;
             int i,j;
@@ -606,8 +613,8 @@ class GameState {
             vector<pair<int,int> > iter_map;
             int combo_pegs_len;
             char combo_pegs_color = '0';
-            vector<int> bCombo(6,0); // first two elements useless
-            vector<int> oCombo(6,0); // first two elements useless
+            vector<int> bCombo(NumRingsToRemove+1,0); // first two elements useless
+            vector<int> oCombo(NumRingsToRemove+1,0); // first two elements useless
             bCombo[0] = -1000;
             oCombo[0] = -1000;
             bCombo[1] = -1000;
@@ -629,12 +636,12 @@ class GameState {
                         combo_pegs_len++;
                         if(combo_pegs_len>1){
                             if(combo_pegs_color=='g'){
-                                if(combo_pegs_len<=5){
+                                if(combo_pegs_len<=NumRingsToRemove){
                                     bCombo[combo_pegs_len]++;
                                 }
                             }
                             else if(combo_pegs_color=='p'){
-                                if(combo_pegs_len<=5){
+                                if(combo_pegs_len<=NumRingsToRemove){
                                     oCombo[combo_pegs_len]++;
                                 }
                             }
@@ -671,12 +678,12 @@ class GameState {
                         combo_pegs_len++;
                         if(combo_pegs_len>1){
                             if(combo_pegs_color=='g'){
-                                if(combo_pegs_len<=5){
+                                if(combo_pegs_len<=NumRingsToRemove){
                                     bCombo[combo_pegs_len]++;
                                 }
                             }
                             else if(combo_pegs_color=='p'){
-                                if(combo_pegs_len<=5){
+                                if(combo_pegs_len<=NumRingsToRemove){
                                     oCombo[combo_pegs_len]++;
                                 }
                             }
@@ -713,12 +720,12 @@ class GameState {
                         combo_pegs_len++;
                         if(combo_pegs_len>1){
                             if(combo_pegs_color=='g'){
-                                if(combo_pegs_len<=5){
+                                if(combo_pegs_len<=NumRingsToRemove){
                                     bCombo[combo_pegs_len]++;
                                 }
                             }
                             else if(combo_pegs_color=='p'){
-                                if(combo_pegs_len<=5){
+                                if(combo_pegs_len<=NumRingsToRemove){
                                     oCombo[combo_pegs_len]++;
                                 }
                             }
@@ -745,6 +752,8 @@ class GameState {
             score += 2*(bCombo[2]-oCombo[2]);
             score += 4*(bCombo[3]-oCombo[3]);            
             score += 8*(bCombo[4]-oCombo[4]);
+            if(NumRingsToRemove>5)
+                score += 16*(bCombo[5]-oCombo[5]);
             score += 5*(bThwart - oThwart);
             score += 350*(RingsRemoved[0] - RingsRemoved[1]);
             if(OriginTurn=='o'){

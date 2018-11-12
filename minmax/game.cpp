@@ -1,6 +1,5 @@
 #include "game.h"
 
-
 size_t split_ours(const string &txt, vector<string> &strs, char ch)
 {
     size_t pos = txt.find( ch );
@@ -285,7 +284,7 @@ vector<pair<pair<int,int>,pair<int,int> > > get_comp(GameState S,char tok)
        for(k=0;k<ret.size();k++)
        {
            bool fivepres = true;
-           for(int ii = k;ii < (k+S.BoardSize);ii++) // This for loop checks all elements 
+           for(int ii = k;ii < (k+S.NumRingsToRemove);ii++) // This for loop checks all elements 
            {
                if (ii>=ret.size())
                {
@@ -302,7 +301,7 @@ vector<pair<pair<int,int>,pair<int,int> > > get_comp(GameState S,char tok)
                }
            }
            if(fivepres)
-                res.push_back(make_pair(ret[k],ret[k+S.BoardSize-1]));
+                res.push_back(make_pair(ret[k],ret[k+S.NumRingsToRemove-1]));
 
        }
 
@@ -317,7 +316,7 @@ vector<pair<pair<int,int>,pair<int,int> > > get_comp(GameState S,char tok)
        for(k=0;k<ret.size();k++)
        {
            bool fivepres = true;
-           for(int ii = k;ii < (k+S.BoardSize);ii++) // This for loop checks all elements 
+           for(int ii = k;ii < (k+S.NumRingsToRemove);ii++) // This for loop checks all elements 
            {
                if (ii>=ret.size())
                {
@@ -334,7 +333,7 @@ vector<pair<pair<int,int>,pair<int,int> > > get_comp(GameState S,char tok)
                }
            }
            if(fivepres)
-                res.push_back(make_pair(ret[k],ret[k+S.BoardSize-1]));
+                res.push_back(make_pair(ret[k],ret[k+S.NumRingsToRemove-1]));
 
        }
 
@@ -350,7 +349,7 @@ vector<pair<pair<int,int>,pair<int,int> > > get_comp(GameState S,char tok)
        for(k=0;k<ret.size();k++)
        {
            bool fivepres = true;
-           for(int ii = k;ii < (k+S.BoardSize);ii++) // This for loop checks all elements 
+           for(int ii = k;ii < (k+S.NumRingsToRemove);ii++) // This for loop checks all elements 
            {
                if (ii>=ret.size())
                {
@@ -367,7 +366,7 @@ vector<pair<pair<int,int>,pair<int,int> > > get_comp(GameState S,char tok)
                }
            }
            if(fivepres)
-                res.push_back(make_pair(ret[k],ret[k+S.BoardSize-1]));
+                res.push_back(make_pair(ret[k],ret[k+S.NumRingsToRemove-1]));
 
        }
 
@@ -521,7 +520,7 @@ bool GetStartMoves( GameState s, vector<GameState> &topush){
 			}
 		}
 	}
-	if((bRings==5) && (oRings==5)){
+	if((bRings==s.RingsInit) && (oRings==s.RingsInit)){
 		return false;
 	}
 	for(i=0;i<s.board.size();i++){

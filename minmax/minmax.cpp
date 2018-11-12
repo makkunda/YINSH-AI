@@ -4,7 +4,6 @@
 const float MY_FLOAT_MAX =  numeric_limits<float>::max();
 const float MY_FLOAT_MIN =  -numeric_limits<float>::max();
 
-
 // float MinMaxInternal(GameState state, int depth, bool maximizing, char OriginTurn){
 //     if((depth==0) || (state.GameEnded())){
 //         return state.EvaluateHeuristicAdvanced(OriginTurn);
@@ -159,8 +158,8 @@ GameState RandomPlayer(GameState state, char OriginTurn){
 }
 
 
-int main_submission(){
-    int player, BoardSize, TIME_GIVEN;
+int main(){
+    int player, BoardSize, TIME_GIVEN,NumRingsToRemoveIn;
     srand(time(0));
     // srand(6334);
 
@@ -171,6 +170,7 @@ int main_submission(){
     player = atoi(vv[0].c_str());
     BoardSize = atoi(vv[1].c_str());
     TIME_GIVEN = atoi(vv[2].c_str());
+    NumRingsToRemoveIn = atoi(vv[2].c_str());
     // cin>>player;
     player-=1; // to make it zero or one
     // cin>>BoardSize;
@@ -187,7 +187,7 @@ int main_submission(){
 
     MoveTables*  FullTable;
     FullTable = new MoveTables(BoardSize);
-    GameState CurrentState(BoardSize, 'b', FullTable);
+    GameState CurrentState(BoardSize,BoardSize,NumRingsToRemoveIn,'b', FullTable);
     // CurrentState.board[0][0] = 'p';
     // CurrentState.board[1][0] = 'p';
     // CurrentState.board[1][1] = 'p';
@@ -229,7 +229,7 @@ int main_submission(){
         ExecuteMove(&CurrentState, recv);
     }
     int MyRingsPlaced = 0;
-    while(MyRingsPlaced<5){
+    while(MyRingsPlaced<BoardSize){
         int hexagon;
         int position;
         while(true){
